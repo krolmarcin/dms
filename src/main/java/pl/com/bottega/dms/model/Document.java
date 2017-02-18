@@ -5,7 +5,6 @@ import pl.com.bottega.dms.model.numbers.NumberGenerator;
 import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -78,12 +77,20 @@ public class Document {
 
     public void confirm(ConfirmDocumentCommand cmd) {
         for (Confirmation confirmation : confirmations)
-            if (confirmation.isOwnedBy(cmd.getEmplyeeId()))
+            if (confirmation.isOwnedBy(cmd.getEmplyeeId())) {
                 confirmation.confirm();
+                return;
+            }
+        throw new DocumentStatusException(String.format("Document not published for %s", cmd.getEmplyeeId()));
     }
 
     public void confirmFor(ConfirmForDocumentCommand cmd) {
-
+        for (Confirmation confirmation : confirmations)
+            if (confirmation.isOwnedBy(cmd.getEmployeeId())) {
+                confirmation.confirmFor(cmd.getConfirmingEmployeeId());
+                return;
+            }
+        throw new DocumentStatusException(String.format("Document not published for %s", cmd.getEmployeeId()));
     }
 
     public DocumentStatus getStatus() {
@@ -136,6 +143,10 @@ public class Document {
 
     public BigDecimal getPrintCost() {
         return printCost;
+    }
+
+    public void setPrintCost(BigDecimal printCost) {
+        this.printCost = printCost;
     }
 
     public boolean isConfirmedBy(EmployeeId employeeId) {

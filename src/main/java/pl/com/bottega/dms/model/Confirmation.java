@@ -24,4 +24,8 @@ public class Confirmation {
         confirmationDate = LocalDateTime.now();
     }
 
+    public void confirmFor(EmployeeId proxy) {
+        confirm();
+        this.proxy = proxy;
+    }
 }
