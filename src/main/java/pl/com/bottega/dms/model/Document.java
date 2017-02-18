@@ -2,6 +2,7 @@ package pl.com.bottega.dms.model;
 
 import pl.com.bottega.dms.model.commands.*;
 import pl.com.bottega.dms.model.numbers.NumberGenerator;
+import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 
 import java.time.LocalDateTime;
 
@@ -10,69 +11,54 @@ import static pl.com.bottega.dms.model.DocumentStatus.*;
 public class Document {
 
     private DocumentNumber number;
-
     private DocumentStatus status;
-
     private String title;
-
     private String content;
+    private LocalDateTime createdAt;
+    private LocalDateTime verifiedAt;
+    private LocalDateTime publishedAt;
+    private LocalDateTime changedAt;
+    private EmployeeId creatorId;
+    private EmployeeId verifierId;
+    private EmployeeId editorId;
+    private EmployeeId publisherId;
 
-    private ChangeDocumentCommand cmd;
-
-    private LocalDateTime createDate, changeDate, verifyDate, publishDate, archiveDate;
-
-    private EmployeeId creator, verifier, changer, publisher, archiver;
-
-
-    public Document(CreateDocumentCommand cmd, NumberGenerator numberGenerator, EmployeeId creatorEmployeeId) {
-        this.creator = creatorEmployeeId;
-        this.title = cmd.getTitle();
+    public Document(CreateDocumentCommand cmd, NumberGenerator numberGenerator) {
         this.number = numberGenerator.generate();
         this.status = DRAFT;
-        this.createDate = LocalDateTime.now();
+        this.title = cmd.getTitle();
+        this.createdAt = LocalDateTime.now();
+        this.creatorId = cmd.getEmployeeId();
     }
 
-    public void change(ChangeDocumentCommand cmd, EmployeeId changerEmployeeId) {
-        if (status.equals(DRAFT) || status.equals(VERIFIED)) {
-            this.title = cmd.getTitle();
-            this.content = cmd.getContent();
-            this.status = DRAFT;
-            this.changeDate = LocalDateTime.now();
-            this.changer = changerEmployeeId;
-        } else {
-            String message = String.format("Document can be edit only in DRAFT or VERIFIED, status: %s", status);
-            throw new DocumentStatusException(message);
-        }
+    public void change(ChangeDocumentCommand cmd) {
+        if (!this.status.equals(DRAFT) && !this.status.equals(VERIFIED))
+            throw new DocumentStatusException("Document should be DRAFT or VERIFIED to PUBLISH");
+        this.title = cmd.getTitle();
+        this.content = cmd.getContent();
+        this.status = DRAFT;
+        this.changedAt = LocalDateTime.now();
+        this.editorId = cmd.getEmployeeId();
     }
 
-    public void verify(EmployeeId verifierEmployeeId) {
-        if (status != DRAFT) {
-            String message = String.format("Document can be verify only in DRAFT, status: %s", status);
-            throw new DocumentStatusException(message);
-        }
-        this.verifier = verifierEmployeeId;
+    public void verify(EmployeeId employeeId) {
+        if (!this.status.equals(DRAFT))
+            throw new DocumentStatusException("Document should be DRAFT to VERIFY");
         this.status = VERIFIED;
-        this.verifyDate = LocalDateTime.now();
+        this.verifiedAt = LocalDateTime.now();
+        this.verifierId = employeeId;
     }
 
-    public void archive(EmployeeId archiverEmployeeId) {
-        this.archiver = archiverEmployeeId;
-        this.archiveDate = LocalDateTime.now();
+    public void archive(EmployeeId employeeId) {
         this.status = ARCHIVED;
     }
 
-    public void publish(PublishDocumentCommand cmd, EmployeeId publisherEmployeeId) {
-        if (status != VERIFIED) {
-            String message = String.format("Only VERIFIED can be publish, status: %s", status);
-            throw new DocumentStatusException(message);
-        }
-        this.publisher = publisherEmployeeId;
+    public void publish(PublishDocumentCommand cmd, PrintCostCalculator printCostCalculator) {
+        if(!this.status.equals(VERIFIED))
+            throw new DocumentStatusException("Document should be VERIFIED to PUBLISH");
         this.status = PUBLISHED;
-        this.publishDate = LocalDateTime.now();
-    }
-
-    private boolean isArchived() {
-        return status.equals(ARCHIVED);
+        this.publishedAt = LocalDateTime.now();
+        this.publisherId = cmd.getEmployeeId();
     }
 
     public void confirm(ConfirmDocumentCommand cmd) {
@@ -99,45 +85,36 @@ public class Document {
         return content;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public LocalDateTime getVerifyDate() {
-        return verifyDate;
+    public LocalDateTime getVerifiedAt() {
+        return verifiedAt;
     }
 
-    public LocalDateTime getChangeDate() {
-        return changeDate;
+    public LocalDateTime getPublishedAt() {
+        return publishedAt;
     }
 
-    public LocalDateTime getPublishDate() {
-        return publishDate;
+    public LocalDateTime getChangedAt() {
+        return changedAt;
     }
 
-    public LocalDateTime getArchiveDate() {
-        return archiveDate;
+    public EmployeeId getCreatorId() {
+        return creatorId;
     }
 
-
-    public EmployeeId getCreator() {
-        return creator;
+    public EmployeeId getVerifierId() {
+        return verifierId;
     }
 
-    public EmployeeId getVerifier() {
-        return verifier;
+    public EmployeeId getEditorId() {
+        return editorId;
     }
 
-    public EmployeeId getChanger() {
-        return changer;
-    }
-
-    public EmployeeId getPublisher() {
-        return publisher;
-    }
-
-    public EmployeeId getArchiver() {
-        return archiver;
+    public EmployeeId getPublisherId() {
+        return publisherId;
     }
 
 }

@@ -1,219 +1,318 @@
 package pl.com.bottega.dms.model;
 
-import org.junit.Before;
-import org.junit.Test;
-import pl.com.bottega.dms.model.commands.ChangeDocumentCommand;
-import pl.com.bottega.dms.model.commands.CreateDocumentCommand;
-import pl.com.bottega.dms.model.commands.PublishDocumentCommand;
-import pl.com.bottega.dms.model.numbers.NumberGenerator;
+        import org.junit.Test;
+        import pl.com.bottega.dms.model.commands.ChangeDocumentCommand;
+        import pl.com.bottega.dms.model.commands.CreateDocumentCommand;
+        import pl.com.bottega.dms.model.commands.PublishDocumentCommand;
+        import pl.com.bottega.dms.model.numbers.NumberGenerator;
+        import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+        import java.math.BigDecimal;
+        import java.time.LocalDateTime;
+        import java.time.temporal.ChronoUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static pl.com.bottega.dms.model.DocumentStatus.*;
+        import static org.junit.Assert.assertEquals;
+        import static org.junit.Assert.assertTrue;
+        import static pl.com.bottega.dms.model.DocumentStatus.*;
 
 public class DocumentTest {
 
-    private static final Long DATE_EPS = 500L;
-    private CreateDocumentCommand cmd;
-    private NumberGenerator numberGenerator;
-    private Document document;
-    private EmployeeId creatorEmployeeId, changerEmployeeId, publisherEmployeeId;
-
-    @Before
-    public void setUp() {
-        cmd = new CreateDocumentCommand();
-        cmd.setTitle("test title");
-        numberGenerator = new StubNumberGenerator();
-        creatorEmployeeId = new EmployeeId(100L);
-        changerEmployeeId = new EmployeeId(200L);
-        publisherEmployeeId = new EmployeeId(300L);
-        document = new Document(cmd, numberGenerator, creatorEmployeeId);
-    }
-
     @Test
     public void shouldBeDraftAfterCreate() {
+        Document document = given().newDocument();
+
         assertEquals(DocumentStatus.DRAFT, document.getStatus());
     }
 
     @Test
     public void shouldGenerateNumberOnCreate() {
-        assertEquals(new DocumentNumber("1"), document.getNumber());
+        Document document = given().newDocument();
+
+        assertEquals(anyDocumentNumber(), document.getNumber());
     }
 
     @Test
     public void shouldSetTitleOnCreate() {
+        Document document = given().newDocument();
+
         assertEquals("test title", document.getTitle());
     }
 
     @Test
     public void shouldChangeTitleAndContent() {
+        Document document = given().newDocument();
+
         ChangeDocumentCommand changeDocumentCommand = new ChangeDocumentCommand();
-        changeDocumentCommand.setTitle("new title test");
-        changeDocumentCommand.setContent("new content test");
+        changeDocumentCommand.setTitle("changed title");
+        changeDocumentCommand.setContent("changed content");
+        document.change(changeDocumentCommand);
 
-        document.change(changeDocumentCommand, changerEmployeeId);
-
-        assertEquals("new title test", document.getTitle());
-        assertEquals("new content test", document.getContent());
+        assertEquals("changed title", document.getTitle());
+        assertEquals("changed content", document.getContent());
     }
 
     @Test
-    public void shouldBeVerifiedAfterVerify() {
-        EmployeeId employeeId = new EmployeeId(100L);
+    //1. Dokument po weryfikacji zmienia status na VERIFIED.
+    public void shouldChangeStatusToVerified() {
+        Document document = given().verifiedDocument();
 
-        document.verify(employeeId);
-
+        //then
         assertEquals(VERIFIED, document.getStatus());
     }
 
     @Test(expected = DocumentStatusException.class)
-    public void shouldNotAllowVeryfingAlreadyVerifiedDocument() {
-        EmployeeId someEmployeeId = new EmployeeId(100L);
-        EmployeeId otherEmployeeId = new EmployeeId(200L);
+    //2. Dokument można zweryfikować tylko gdy jest w statusie DRAFT, próba weryfikacji w każdym innym statusie powinna wyrzucić wyjątek runtajmowy DocumentStatusException (stwórz klasę wyjątku).
+    public void shouldNotAllowDoubleVerification() {
+        //given
+        Document document = given().verifiedDocument();
 
-        // given - document is already verified
-        document.verify(someEmployeeId);
-
-        // when - second verification attempt
-        document.verify(otherEmployeeId);
-
-        // then - nie ma tutaj żadych assercji bo testujemy czy kodzik produkcyjny wyrzuci wyjątek klasy DocumentStatusException
+        //when
+        document.verify(anyEmployeeId());
     }
 
     @Test
-    public void shouldBeDraftAfterEdit() {
-        ChangeDocumentCommand changeDocumentCommand = new ChangeDocumentCommand();
-        EmployeeId someEmployeeId = new EmployeeId(100L);
+    //3. Dokument po edycji powinien wrócić do statusu DRAFT.
+    public void shouldBeDraftAfterEdition() {
+        // given verified document
+        Document document = given().verifiedDocument();
 
-        document.verify(someEmployeeId);
-        changeDocumentCommand.setContent("test edycji");
-        document.change(changeDocumentCommand, someEmployeeId);
+        //when
+        document.change(new ChangeDocumentCommand());
 
+        // then
         assertEquals(DRAFT, document.getStatus());
     }
 
     @Test
-    public void shouldBePublishedAfterPublish() {
-        PublishDocumentCommand publishDocumentCommand = new PublishDocumentCommand();
+    //4. Dokument po publickacji powinien zmienić status na PUBLISHED.
+    public void shouldChangeStatusToPublishedOnPublication() {
+        // given verified document
+        Document document = given().verifiedDocument();
 
-        document.verify(publisherEmployeeId);
-        document.publish(publishDocumentCommand, publisherEmployeeId);
+        // when publishing document
+        document.publish(new PublishDocumentCommand(), new StubPrintCostCalculator());
 
+        // then
         assertEquals(PUBLISHED, document.getStatus());
     }
 
     @Test(expected = DocumentStatusException.class)
-    public void shouldNotAllowEditStatusDifferentDraftOrVerified() {
-        PublishDocumentCommand publishDocumentCommand = new PublishDocumentCommand();
+    //2 cd
+    public void shouldNotAllowVerificationOfPublishedDocument() {
+        //given - published document
+        Document document = given().publishedDocument();
+
+        //when
+        document.verify(anyEmployeeId());
+    }
+
+    @Test(expected = DocumentStatusException.class)
+    // 5. Dokumentu nie można edytować w statusie innym niż DRAFT i VERIFIED. Próba edycji w każdym innym statusie powinna wyrzucić wyjątek runtajmowy DocumentStatusException.
+    public void shouldNotAllowEditionOfPublishedDocument() {
+        //given - published document
+        Document document = given().publishedDocument();
+
+        //when
+        document.change(new ChangeDocumentCommand());
+    }
+
+    @Test
+    // 6. Dokument powinien pamiętać datę swojego stworzenia.
+    public void shouldRememberCreationDate() {
+        Document document = given().newDocument();
+
+        assertSameTime(LocalDateTime.now(), document.getCreatedAt());
+    }
+
+    @Test
+    //7. Doument powinien pamiętać datę ostatniej weryfikacji.
+    public void shouldRememberLastVerificationDate() {
+        Document document = given().verifiedDocument();
+
+        //then
+        assertSameTime(LocalDateTime.now(), document.getVerifiedAt());
+    }
+
+    @Test
+    //      8. Dokument powinien pamiętać datę publikacji.
+    public void shouldRememberPublicationDate() {
+        Document document = given().publishedDocument();
+
+        // then
+        assertSameTime(LocalDateTime.now(), document.getPublishedAt());
+    }
+
+    @Test
+    //9. Dokument powinien pamiętać datę ostatniej edycji.
+    public void shouldRememberLastEditionDate() {
+        Document document = given().newDocument();
+
+        // when
+        document.change(new ChangeDocumentCommand());
+
+        // then
+        assertSameTime(LocalDateTime.now(), document.getChangedAt());
+    }
+
+    //10. Dokument powinien pamiętać id pracownika, który go stworzył.
+    @Test
+    public void shouldRememberCreatorId() {
+        Document document = given().newDocument();
+
+        assertEquals(anyEmployeeId(), document.getCreatorId());
+    }
+
+    //11. Dokument powinien pamiętać id pracownika, który go ostatnio zweryfikował.
+    @Test
+    public void shouldRememberVerificatorId() {
+        Document document = given().verifiedDocument();
+
+        assertEquals(anyEmployeeId(), document.getVerifierId());
+    }
+
+    //12. Dokument powinien pamiętać id pracownika, który go ostatnio edytował.
+    @Test
+    public void shouldRememberEditorId() {
+        Document document = given().newDocument();
+
         ChangeDocumentCommand changeDocumentCommand = new ChangeDocumentCommand();
+        changeDocumentCommand.setEmployeeId(anyEmployeeId());
+        document.change(changeDocumentCommand);
 
-        document.publish(publishDocumentCommand, publisherEmployeeId);
-        changeDocumentCommand.setContent("test edycji");
-        document.change(changeDocumentCommand, changerEmployeeId);
+        assertEquals(anyEmployeeId(), document.getEditorId());
+    }
+
+    //13. Dokument powinien pamiętać id pracownika, który go opublikował.
+    @Test
+    public void shouldRememberPublisherId() {
+        Document document = given().publishedDocument();
+
+        assertEquals(anyEmployeeId(), document.getPublisherId());
     }
 
     @Test
-    public void shouldRememberCreateDate() {
-        assertSameTime(document.getCreateDate(), LocalDateTime.now());
+    //14. Dokument można zarchiwizować w dowolnym statusie i wtedy zmienia on status na ARCHIVED.
+    public void shouldAllowArchivingDraftDocuments() {
+        Document document = given().newDocument();
+
+        document.archive(anyEmployeeId());
+
+        assertEquals(ARCHIVED, document.getStatus());
     }
 
     @Test
-    public void shouldRememberVerifyDate() {
-        EmployeeId someEmployeeId = new EmployeeId(123L);
+    //14. Dokument można zarchiwizować w dowolnym statusie i wtedy zmienia on status na ARCHIVED.
+    public void shouldAllowArchivingVerifiedDocuments() {
+        Document document = given().verifiedDocument();
 
-        document.verify(someEmployeeId);
+        document.archive(anyEmployeeId());
 
-        assertSameTime(document.getVerifyDate(), LocalDateTime.now());
+        assertEquals(ARCHIVED, document.getStatus());
     }
 
     @Test
-    public void shouldRememberChangeDate() {
-        ChangeDocumentCommand changeDocumentCommand = new ChangeDocumentCommand();
+    //14. Dokument można zarchiwizować w dowolnym statusie i wtedy zmienia on status na ARCHIVED.
+    public void shouldAllowArchivingPublishedDocuments() {
+        Document document = given().publishedDocument();
 
-        document.change(changeDocumentCommand, changerEmployeeId);
-
-        assertSameTime(document.getChangeDate(), LocalDateTime.now());
-    }
-
-    @Test
-    public void shouldRememberPublishDate() {
-        PublishDocumentCommand publishDocumentCommand = new PublishDocumentCommand();
-
-        document.verify(publisherEmployeeId);
-        document.publish(publishDocumentCommand, publisherEmployeeId);
-
-        assertSameTime(document.getPublishDate(), LocalDateTime.now());
-    }
-
-    @Test
-    public void shouldRememberCreatorEmployeeId() {
-        EmployeeId someEmployeeId = new EmployeeId(100L);
-
-        assertEquals(document.getCreator(), someEmployeeId);
-    }
-
-    @Test
-    public void shouldRememberVerifierEmployeeId() {
-        EmployeeId someEmployeeId = new EmployeeId(100L);
-
-        document.verify(someEmployeeId);
-
-        assertEquals(document.getVerifier(), someEmployeeId);
-    }
-
-    @Test
-    public void shouldRememberChangerEmployeeId() {
-        ChangeDocumentCommand changeDocumentCommand = new ChangeDocumentCommand();
-
-        document.change(changeDocumentCommand, changerEmployeeId);
-
-        assertEquals(document.getChanger(), changerEmployeeId);
-    }
-
-    @Test
-    public void shouldRememberPublisherEmployeeId() {
-        PublishDocumentCommand publishDocumentCommand = new PublishDocumentCommand();
-        EmployeeId verifierEmployeeId = new EmployeeId(100L);
-
-        document.verify(verifierEmployeeId);
-        document.publish(publishDocumentCommand, publisherEmployeeId);
-
-        assertEquals(document.getPublisher(), publisherEmployeeId);
-    }
-
-    @Test
-    public void shouldBeArchivedAferArchive(){
-        EmployeeId archiverEmployeeId = new EmployeeId(500L);
-
-        document.archive(archiverEmployeeId);
+        document.archive(anyEmployeeId());
 
         assertEquals(ARCHIVED, document.getStatus());
     }
 
     @Test(expected = DocumentStatusException.class)
-    public void shouldNotAllowChangeStatusAferArchive(){
-        EmployeeId archiverEmployeeId = new EmployeeId(500L);
-        EmployeeId someEmployee = new EmployeeId(100L);
-        PublishDocumentCommand publishDocumentCommand = new PublishDocumentCommand();
-        ChangeDocumentCommand changeDocumentCommand = new ChangeDocumentCommand();
+    //15. Z dokumentem zarchiwizowanym nie można nic robić (edytować, publikować, weryfikować). Wszelkie próby powinny rzucać wyjątek DocumentStatusException.
+    public void shouldNotAllowEditingArchivedDocuments() {
+        Document document = given().archivedDocument();
 
-        document.archive(archiverEmployeeId);
-        //document.publish(publishDocumentCommand, someEmployee);
-        //document.verify(someEmployee);
-        document.change(changeDocumentCommand, someEmployee);
-
+        document.change(new ChangeDocumentCommand());
     }
+
+    @Test(expected = DocumentStatusException.class)
+    //15. Z dokumentem zarchiwizowanym nie można nic robić (edytować, publikować, weryfikować). Wszelkie próby powinny rzucać wyjątek DocumentStatusException.
+    public void shouldNotAllowVerifyingArchivedDocuments() {
+        Document document = given().archivedDocument();
+
+        document.verify(anyEmployeeId());
+    }
+
+    @Test(expected = DocumentStatusException.class)
+    //15. Z dokumentem zarchiwizowanym nie można nic robić (edytować, publikować, weryfikować). Wszelkie próby powinny rzucać wyjątek DocumentStatusException.
+    public void shouldNotAllowPublishingArchivedDocuments() {
+        Document document = given().archivedDocument();
+
+        document.publish(new PublishDocumentCommand(), new StubPrintCostCalculator());
+    }
+
+    @Test(expected = DocumentStatusException.class)
+    public void shouldNotAllowPublishingDraftDocuments() {
+        Document document = given().newDocument();
+
+        document.publish(new PublishDocumentCommand(), new StubPrintCostCalculator());
+    }
+
+    private static final Long DATE_EPS = 500L;
 
     private void assertSameTime(LocalDateTime expected, LocalDateTime actual) {
         assertTrue(ChronoUnit.MILLIS.between(expected, actual) < DATE_EPS);
     }
 
     class StubNumberGenerator implements NumberGenerator {
+
         public DocumentNumber generate() {
-            return new DocumentNumber("1");
+            return anyDocumentNumber();
+        }
+    }
+
+    class StubPrintCostCalculator implements PrintCostCalculator {
+        public BigDecimal calculateCost(Document document) {
+            return BigDecimal.ZERO;
+        }
+    }
+
+
+    private DocumentAssembler given() {
+        return new DocumentAssembler();
+    }
+
+    private DocumentNumber anyDocumentNumber() {
+        return new DocumentNumber("1");
+    }
+
+    private EmployeeId anyEmployeeId() {
+        return new EmployeeId(1L);
+    }
+
+    class DocumentAssembler {
+
+
+        public Document newDocument() {
+            EmployeeId employeeId = anyEmployeeId();
+            CreateDocumentCommand cmd = new CreateDocumentCommand();
+            cmd.setTitle("test title");
+            cmd.setEmployeeId(employeeId);
+            NumberGenerator numberGenerator = new StubNumberGenerator();
+            return new Document(cmd, numberGenerator);
+        }
+
+        public Document verifiedDocument() {
+            Document document = newDocument();
+            document.verify(anyEmployeeId());
+            return document;
+        }
+
+        public Document publishedDocument() {
+            Document document = verifiedDocument();
+            PublishDocumentCommand cmd = new PublishDocumentCommand();
+            cmd.setEmployeeId(anyEmployeeId());
+            document.publish(cmd, new StubPrintCostCalculator());
+            return document;
+        }
+
+        public Document archivedDocument() {
+            Document document = newDocument();
+            document.archive(anyEmployeeId());
+            return document;
         }
     }
 

@@ -1,8 +1,11 @@
 package pl.com.bottega.dms.model.commands;
 
+import pl.com.bottega.dms.model.EmployeeId;
+
 public class ChangeDocumentCommand {
     private String title;
     private String content;
+    private EmployeeId employeeId;
 
     public void setTitle(String title) {
         this.title = title;
@@ -20,4 +23,11 @@ public class ChangeDocumentCommand {
         return content;
     }
 
+    public EmployeeId getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(EmployeeId employeeId) {
+        this.employeeId = employeeId;
+    }
 }
