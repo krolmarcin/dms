@@ -23,11 +23,11 @@ public class ChangeDocumentCommand {
         return content;
     }
 
-    public EmployeeId getEmployeeId() {
-        return employeeId;
-    }
-
     public void setEmployeeId(EmployeeId employeeId) {
         this.employeeId = employeeId;
+    }
+
+    public EmployeeId getEmployeeId() {
+        return employeeId;
     }
 }
