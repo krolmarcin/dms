@@ -24,4 +24,7 @@ public class DocumentNumber {
         return number.hashCode();
     }
 
+    public String getNumber() {
+        return number;
+    }
 }
