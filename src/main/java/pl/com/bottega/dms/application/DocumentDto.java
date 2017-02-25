@@ -9,7 +9,15 @@ public class DocumentDto {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getNumber() {
         return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 }
