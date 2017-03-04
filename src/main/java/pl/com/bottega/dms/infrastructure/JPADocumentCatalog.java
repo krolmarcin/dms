@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
-import javax.print.Doc;
 import java.util.*;
 
 public class JPADocumentCatalog implements DocumentCatalog {
