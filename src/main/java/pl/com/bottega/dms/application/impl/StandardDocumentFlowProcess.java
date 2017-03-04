@@ -1,5 +1,6 @@
 package pl.com.bottega.dms.application.impl;
 
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.dms.application.DocumentFlowProcess;
 import pl.com.bottega.dms.model.Document;
@@ -14,6 +15,7 @@ import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 import pl.com.bottega.dms.model.printing.RGBPrintCostCalculator;
 
 @Transactional
+@Component
 public class StandardDocumentFlowProcess implements DocumentFlowProcess {
 
     private NumberGenerator numberGenerator;

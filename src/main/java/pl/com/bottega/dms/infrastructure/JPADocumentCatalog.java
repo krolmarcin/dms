@@ -1,5 +1,6 @@
 package pl.com.bottega.dms.infrastructure;
 
+import org.springframework.stereotype.Component;
 import pl.com.bottega.dms.application.*;
 import pl.com.bottega.dms.model.Confirmation;
 import pl.com.bottega.dms.model.Document;
@@ -14,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+@Component
 public class JPADocumentCatalog implements DocumentCatalog {
 
     @PersistenceContext
