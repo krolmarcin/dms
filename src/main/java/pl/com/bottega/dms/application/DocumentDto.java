@@ -1,9 +1,20 @@
 package pl.com.bottega.dms.application;
 
-public class DocumentDto {
+import pl.com.bottega.dms.model.DocumentStatus;
+import pl.com.bottega.dms.model.EmployeeId;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+public class DocumentDto {
     private String title;
     private String number;
+
+    private String content;
+
+    private String status;
+    private List<ConfirmationDto> confirmations;
 
     public String getTitle() {
         return title;
@@ -19,5 +30,29 @@ public class DocumentDto {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public List<ConfirmationDto> getConfirmations() {
+        return confirmations;
+    }
+
+    public void setConfirmations(List<ConfirmationDto> confirmations) {
+        this.confirmations = confirmations;
     }
 }

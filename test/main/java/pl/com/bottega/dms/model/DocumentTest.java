@@ -3,12 +3,8 @@ package pl.com.bottega.dms.model;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import pl.com.bottega.dms.model.commands.ChangeDocumentCommand;
-import pl.com.bottega.dms.model.commands.ConfirmDocumentCommand;
-import pl.com.bottega.dms.model.commands.CreateDocumentCommand;
-import pl.com.bottega.dms.model.commands.PublishDocumentCommand;
+import pl.com.bottega.dms.model.commands.*;
 import pl.com.bottega.dms.model.numbers.NumberGenerator;
 import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 
@@ -18,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static pl.com.bottega.dms.model.DocumentStatus.*;
@@ -282,12 +279,117 @@ public class DocumentTest {
 
         //when
         ConfirmDocumentCommand cmd = new ConfirmDocumentCommand();
-        cmd.setEmplyeeId(new EmployeeId(1L));
+        cmd.setEmployeeId(new EmployeeId(1L));
         document.confirm(cmd);
 
         //then
         assertTrue(document.isConfirmedBy(new EmployeeId(1L)));
     }
+
+    @Test
+    //1. Dokument powinien pamiętać daty potwierdzenia przez poszczególnych pracowników
+    public void shouldRememberConfirmationDateByEmployees() {
+        //given - published document for EmployeeIds
+        EmployeeId employeeId1 = new EmployeeId(11L);
+        EmployeeId employeeId2 = new EmployeeId(12L);
+        Document document = given().publishedDocument(employeeId1, employeeId2);
+
+        //when - confirm by employees
+        ConfirmDocumentCommand cmd1 = new ConfirmDocumentCommand();
+        ConfirmDocumentCommand cmd2 = new ConfirmDocumentCommand();
+        cmd1.setEmployeeId(employeeId1);
+        cmd2.setEmployeeId(employeeId2);
+        document.confirm(cmd1);
+        document.confirm(cmd2);
+
+        //then - confirmationDate can't be null
+        assertNotNull(document.getConfirmation(employeeId1).getConfirmationDate());
+        assertNotNull(document.getConfirmation(employeeId2).getConfirmationDate());
+    }
+
+    @Test
+    // 2. Dokumnet powiniem pamiętać kto za kogo potwierdzał
+    public void shouldRememberProxyConfirmFor() {
+        //given - published document for EmployeeId(3L)
+        EmployeeId employeeId = new EmployeeId(3L);
+        Document document = given().publishedDocument(employeeId);
+
+        //when - confirm by proxy
+        ConfirmForDocumentCommand cmd = new ConfirmForDocumentCommand();
+        EmployeeId proxy = new EmployeeId(10L);
+        cmd.setEmployeeId(employeeId);
+        cmd.setConfirmingEmployeeId(proxy);
+        document.confirmFor(cmd);
+
+        //then - getConfirmationFor by proxy should be employeeId
+        assertEquals(proxy, document.getConfirmation(employeeId).getProxy());
+    }
+
+    @Test(expected = DocumentStatusException.class)
+    //3. Ten sam employee nie może potwierdzić dokumentu dwa razy (powinien wylecieć wyjątek)
+    public void shouldNotAllowConfirmByEmployeeMoreThanOnce() {
+        //given - published document for EmployeeId(3L)
+        EmployeeId employeeId = new EmployeeId(300L);
+        Document document = given().publishedDocument(employeeId);
+
+        //when - employee try confirm more than once
+        ConfirmDocumentCommand cmd = new ConfirmDocumentCommand();
+        cmd.setEmployeeId(employeeId);
+        document.confirm(cmd);
+        document.confirm(cmd);
+
+        //then - should throw exception - add as @Test(expected)
+    }
+
+    @Test(expected = DocumentStatusException.class)
+    //3a. Ten sam employee nie może potwierdzić dokumentu dwa razy (powinien wylecieć wyjątek) confirmFor
+    public void shouldNotAllowConfirmForByEmployeeMoreThanOnce() {
+        //given - published document for EmployeeId(3L)
+        EmployeeId employeeId = new EmployeeId(300L);
+        Document document = given().publishedDocument(employeeId);
+
+        //when - employee try confirmFor more than once
+        ConfirmForDocumentCommand cmd = new ConfirmForDocumentCommand();
+        cmd.setEmployeeId(employeeId);
+        EmployeeId proxy = new EmployeeId(301L);
+        cmd.setConfirmingEmployeeId(proxy);
+        document.confirmFor(cmd);
+        document.confirmFor(cmd);
+
+        //then - should throw exception - add as @Test(expected)
+    }
+
+
+    @Test(expected = DocumentStatusException.class)
+    //4. Employee dla którego nie został opublikowany dokument, nie może go potwierdzić (powinien wylecieć wyjątek)
+    public void shouldNotAllowConfirmWhoIsNotForPublished() {
+        //given - published document for Employee(200L)
+        Document document = given().publishedDocument(new EmployeeId(200L));
+
+        //when - Employee(300L) try to confirm
+        ConfirmDocumentCommand cmd = new ConfirmDocumentCommand();
+        cmd.setEmployeeId(new EmployeeId(300L));
+        document.confirm(cmd);
+
+        //then - should throw exception - add as @Test(expected)
+    }
+
+    @Test(expected = DocumentStatusException.class)
+    //5. Employee który potwierdza za drugiego employee nie może być jednocześnie tym za kogo potwierdza.
+    public void shouldNotAllowedConfirmWhenProxyAndEmployeeIsTheSame() {
+        //given - published document for Employee(300L)
+        EmployeeId employeeId = new EmployeeId(300L);
+        Document document = given().publishedDocument(employeeId);
+
+        //when - Employee 300L try to confirmFor
+        ConfirmForDocumentCommand cmd = new ConfirmForDocumentCommand();
+        cmd.setEmployeeId(employeeId);
+        cmd.setConfirmingEmployeeId(employeeId);
+        document.confirmFor(cmd);
+
+        //then - throw exception - add as @Test(expected)
+    }
+
 
     private static final Long DATE_EPS = 500L;
 
@@ -309,7 +411,6 @@ public class DocumentTest {
     }
 
     class DocumentAssembler {
-
 
         public Document newDocument() {
             EmployeeId employeeId = anyEmployeeId();

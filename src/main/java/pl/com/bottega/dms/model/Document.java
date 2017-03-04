@@ -1,13 +1,16 @@
 package pl.com.bottega.dms.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import pl.com.bottega.dms.model.commands.*;
 import pl.com.bottega.dms.model.numbers.NumberGenerator;
 import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 
 import javax.persistence.*;
-import javax.print.Doc;
+import javax.xml.crypto.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +43,7 @@ public class Document {
     private EmployeeId publisherId;
     private BigDecimal printCost;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "documentNumber")
     private Set<Confirmation> confirmations;
 
@@ -95,21 +98,13 @@ public class Document {
     }
 
     public void confirm(ConfirmDocumentCommand cmd) {
-        for (Confirmation confirmation : confirmations)
-            if (confirmation.isOwnedBy(cmd.getEmplyeeId())) {
-                confirmation.confirm();
-                return;
-            }
-        throw new DocumentStatusException(String.format("Document not published for %s", cmd.getEmplyeeId()));
+        Confirmation confirmation = getConfirmation(cmd.getEmployeeId());
+        confirmation.confirm();
     }
 
     public void confirmFor(ConfirmForDocumentCommand cmd) {
-        for (Confirmation confirmation : confirmations)
-            if (confirmation.isOwnedBy(cmd.getEmployeeId())) {
-                confirmation.confirmFor(cmd.getConfirmingEmployeeId());
-                return;
-            }
-        throw new DocumentStatusException(String.format("Document not published for %s", cmd.getEmployeeId()));
+        Confirmation confirmation = getConfirmation(cmd.getEmployeeId());
+        confirmation.confirmFor(cmd.getConfirmingEmployeeId());
     }
 
     public DocumentStatus getStatus() {
@@ -169,11 +164,18 @@ public class Document {
     }
 
     public boolean isConfirmedBy(EmployeeId employeeId) {
-        for (Confirmation confirmation : confirmations) {
-            if (confirmation.isOwnedBy(employeeId))
-                return confirmation.isConfirmed();
-        }
-        return false;
+        return getConfirmation(employeeId).isConfirmed();
     }
 
+    public Set<Confirmation> getConfirmations() {
+        return Collections.unmodifiableSet(confirmations);
+    }
+
+    public Confirmation getConfirmation(EmployeeId employeeId) {
+        for (Confirmation confirmation : confirmations) {
+            if (confirmation.isOwnedBy(employeeId))
+                return confirmation;
+        }
+        throw new DocumentStatusException(String.format("No confirmation for %s", employeeId));
+    }
 }

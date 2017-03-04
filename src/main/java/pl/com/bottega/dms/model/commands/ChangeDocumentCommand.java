@@ -3,8 +3,13 @@ package pl.com.bottega.dms.model.commands;
 import pl.com.bottega.dms.model.EmployeeId;
 
 public class ChangeDocumentCommand {
+
     private String title;
+
     private String content;
+
+    private String number;
+
     private EmployeeId employeeId;
 
     public void setTitle(String title) {
@@ -30,4 +35,13 @@ public class ChangeDocumentCommand {
     public EmployeeId getEmployeeId() {
         return employeeId;
     }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
 }

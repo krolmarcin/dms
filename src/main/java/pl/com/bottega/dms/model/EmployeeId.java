@@ -5,21 +5,22 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class EmployeeId {
 
-    Long id;
+    private Long id;
 
     public EmployeeId(Long id) {
         this.id = id;
     }
+
+    EmployeeId() {}
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        EmployeeId employeeId = (EmployeeId) o;
+        EmployeeId that = (EmployeeId) o;
 
-        return id.equals(employeeId.id);
-
+        return id.equals(that.id);
     }
 
     @Override
@@ -27,4 +28,7 @@ public class EmployeeId {
         return id.hashCode();
     }
 
+    public Long getId() {
+        return id;
+    }
 }

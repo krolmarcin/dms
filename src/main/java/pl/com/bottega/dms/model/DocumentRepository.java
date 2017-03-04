@@ -4,4 +4,5 @@ public interface DocumentRepository {
 
     void put(Document document);
 
+    Document get(DocumentNumber nr);
 }

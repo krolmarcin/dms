@@ -4,7 +4,10 @@ import pl.com.bottega.dms.model.EmployeeId;
 
 public class ConfirmForDocumentCommand {
 
+    private String number;
+
     private EmployeeId employeeId;
+
     private EmployeeId confirmingEmployeeId;
 
     public EmployeeId getEmployeeId() {
@@ -23,4 +26,11 @@ public class ConfirmForDocumentCommand {
         this.confirmingEmployeeId = confirmingEmployeeId;
     }
 
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
 }

@@ -3,13 +3,24 @@ package pl.com.bottega.dms.model.commands;
 import pl.com.bottega.dms.model.EmployeeId;
 
 public class ConfirmDocumentCommand {
-    private EmployeeId emplyeeId;
 
-    public void setEmplyeeId(EmployeeId emplyeeId) {
-        this.emplyeeId = emplyeeId;
+    private String number;
+
+    private EmployeeId employeeId;
+
+    public void setEmployeeId(EmployeeId employeeId) {
+        this.employeeId = employeeId;
     }
 
-    public EmployeeId getEmplyeeId() {
-        return emplyeeId;
+    public EmployeeId getEmployeeId() {
+        return employeeId;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 }
