@@ -22,8 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JPADocumentCatalogTest {
 
     @Autowired
-    //private JPADocumentCatalog catalog;
-    private JPQLDocumentCatalog catalog;
+    private JPADocumentCatalog catalog;
+    //private JPQLDocumentCatalog catalog;
 
     @Test
     @Sql("/fixtures/documentByPhrase.sql")
