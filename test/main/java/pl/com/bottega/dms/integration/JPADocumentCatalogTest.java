@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.dms.application.DocumentQuery;
 import pl.com.bottega.dms.application.DocumentSearchResults;
 import pl.com.bottega.dms.infrastructure.JPADocumentCatalog;
+import pl.com.bottega.dms.infrastructure.JPQLDocumentCatalog;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JPADocumentCatalogTest {
 
     @Autowired
-    private JPADocumentCatalog catalog;
+    //private JPADocumentCatalog catalog;
+    private JPQLDocumentCatalog catalog;
 
     @Test
     @Sql("/fixtures/documentByPhrase.sql")
