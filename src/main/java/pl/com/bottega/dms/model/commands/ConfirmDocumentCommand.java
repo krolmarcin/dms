@@ -8,12 +8,12 @@ public class ConfirmDocumentCommand {
 
     private EmployeeId employeeId;
 
-    public void setEmployeeId(EmployeeId employeeId) {
-        this.employeeId = employeeId;
-    }
-
     public EmployeeId getEmployeeId() {
         return employeeId;
+    }
+
+    public void setEmployeeId(EmployeeId employeeId) {
+        this.employeeId = employeeId;
     }
 
     public String getNumber() {
@@ -23,4 +23,5 @@ public class ConfirmDocumentCommand {
     public void setNumber(String number) {
         this.number = number;
     }
+
 }

@@ -3,10 +3,11 @@ package pl.com.bottega.dms.model.commands;
 import pl.com.bottega.dms.model.EmployeeId;
 
 public class CreateDocumentCommand {
-    
+
     private String title;
-    
+
     private EmployeeId employeeId;
+    private String content;
 
     public void setTitle(String title) {
         this.title = title;
@@ -24,4 +25,11 @@ public class CreateDocumentCommand {
         return employeeId;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 }

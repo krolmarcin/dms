@@ -54,6 +54,7 @@ public class Document {
         this.number = numberGenerator.generate();
         this.status = DRAFT;
         this.title = cmd.getTitle();
+        this.content = cmd.getContent();
         this.createdAt = LocalDateTime.now();
         this.creatorId = cmd.getEmployeeId();
         this.confirmations = new HashSet<>();
@@ -178,4 +179,5 @@ public class Document {
         }
         throw new DocumentStatusException(String.format("No confirmation for %s", employeeId));
     }
+
 }
