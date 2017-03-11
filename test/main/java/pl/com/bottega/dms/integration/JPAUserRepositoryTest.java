@@ -21,6 +21,35 @@ public class JPAUserRepositoryTest {
     private JPAUserRepository jpaUserRepository;
 
     @Test
+    public void shouldFindByEmployeeId(){
+        //given
+        User user = new User(new EmployeeId(1L), "janek", "xxx");
+        jpaUserRepository.put(user);
+
+        //when
+        User repoUser = jpaUserRepository.findByEmployeeId(new EmployeeId(1L));
+
+        //then
+        assertThat(repoUser).isNotNull();
+        assertThat(repoUser.getEmployeeId()).isEqualTo(new EmployeeId(1L));
+    }
+
+    @Test
+    public void shouldFindUserByName(){
+        //given
+        User user = new User(new EmployeeId(1L), "janek", "xxx");
+        jpaUserRepository.put(user);
+
+        //when
+        User repoUser = jpaUserRepository.findByUserName("janek");
+
+        //then
+        assertThat(repoUser).isNotNull();
+        assertThat(repoUser.getEmployeeId()).isEqualTo(new EmployeeId(1L));
+
+    }
+
+    @Test
     public void shouldFindUserByUsernameAndPassword() {
         //given
         User user = new User(new EmployeeId(1L), "janek", "xxx");

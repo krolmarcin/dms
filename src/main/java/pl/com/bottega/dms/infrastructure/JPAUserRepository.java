@@ -7,21 +7,22 @@ import pl.com.bottega.dms.model.EmployeeId;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class JPAUserRepository implements UserRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Override
+    public void put(User user) {
+        entityManager.persist(user);
+    }
 
     @Override
     public User findByEmployeeId(EmployeeId employeeId) {
@@ -72,8 +73,4 @@ public class JPAUserRepository implements UserRepository {
             return users.get(0);
     }
 
-    @Override
-    public void put(User user) {
-        entityManager.persist(user);
-    }
 }
