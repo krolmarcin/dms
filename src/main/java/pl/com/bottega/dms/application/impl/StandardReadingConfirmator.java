@@ -30,4 +30,5 @@ public class StandardReadingConfirmator implements ReadingConfirmator {
         Document document = documentRepository.get(documentNumber);
         document.confirmFor(cmd);
     }
+
 }

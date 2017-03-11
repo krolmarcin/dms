@@ -2,6 +2,7 @@ package pl.com.bottega.dms.ui;
 
 import org.springframework.web.bind.annotation.*;
 import pl.com.bottega.dms.application.*;
+import pl.com.bottega.dms.application.user.AuthRequiedException;
 import pl.com.bottega.dms.model.Confirmation;
 import pl.com.bottega.dms.model.Document;
 import pl.com.bottega.dms.model.DocumentNumber;
@@ -27,7 +28,7 @@ public class DocumentController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public DocumentNumber create(@RequestBody CreateDocumentCommand cmd) {
+    public DocumentNumber create(@RequestBody CreateDocumentCommand cmd) throws AuthRequiedException {
         return documentFlowProcess.create(cmd);
     }
 

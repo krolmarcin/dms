@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import pl.com.bottega.dms.application.*;
+import pl.com.bottega.dms.application.user.AuthRequiedException;
 import pl.com.bottega.dms.model.DocumentNumber;
 import pl.com.bottega.dms.model.EmployeeId;
 import pl.com.bottega.dms.model.commands.ConfirmDocumentCommand;
@@ -32,7 +33,7 @@ public class ConfirmationTest {
     private ReadingConfirmator readingConfirmator;
 
     @Test
-    public void shouldConfirmDocument() {
+    public void shouldConfirmDocument() throws AuthRequiedException {
         // given
         DocumentNumber documentNumber = publishedDocument();
 
@@ -51,7 +52,7 @@ public class ConfirmationTest {
     }
 
     @Test
-    public void shouldConfirmDocumentForAnotherEmployee() {
+    public void shouldConfirmDocumentForAnotherEmployee() throws AuthRequiedException {
         // given
         DocumentNumber documentNumber = publishedDocument();
 
@@ -71,7 +72,7 @@ public class ConfirmationTest {
         assertThat(confirmationDto.getProxyEmployeeId()).isEqualTo(2L);
     }
 
-    private DocumentNumber publishedDocument() {
+    private DocumentNumber publishedDocument() throws AuthRequiedException {
         DocumentNumber documentNumber = createDocument();
         documentFlowProcess.verify(documentNumber);
         PublishDocumentCommand publishDocumentCommand = new PublishDocumentCommand();
@@ -81,7 +82,7 @@ public class ConfirmationTest {
         return documentNumber;
     }
 
-    private DocumentNumber createDocument() {
+    private DocumentNumber createDocument() throws AuthRequiedException {
         CreateDocumentCommand cmd = new CreateDocumentCommand();
         cmd.setTitle("test");
         return documentFlowProcess.create(cmd);

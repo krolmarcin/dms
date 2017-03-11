@@ -4,7 +4,6 @@ import pl.com.bottega.dms.model.EmployeeId;
 
 public interface UserRepository {
 
-
     void put(User user);
 
     User findByEmployeeId(EmployeeId employeeId);
