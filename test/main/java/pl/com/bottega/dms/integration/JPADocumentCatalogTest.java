@@ -1,5 +1,6 @@
 package pl.com.bottega.dms.integration;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.dms.application.DocumentQuery;
 import pl.com.bottega.dms.application.DocumentSearchResults;
+import pl.com.bottega.dms.application.user.AuthProcess;
+import pl.com.bottega.dms.application.user.CreateAccountCommand;
+import pl.com.bottega.dms.application.user.LoginCommand;
 import pl.com.bottega.dms.infrastructure.JPADocumentCatalog;
 import pl.com.bottega.dms.infrastructure.JPQLDocumentCatalog;
 
@@ -51,7 +55,7 @@ public class JPADocumentCatalogTest {
 
         //then
         assertThat(searchResults.getDocuments().size()).isEqualTo(2);
-        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("0");
+        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("1");
         assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("fancy");
     }
 
@@ -66,8 +70,8 @@ public class JPADocumentCatalogTest {
 
         //then
         assertThat(searchResults.getDocuments().size()).isEqualTo(3);
-        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("0");
-        assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("1");
+        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("1");
+        assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("2");
         assertThat(searchResults.getDocuments().get(2).getNumber()).isEqualTo("fancy");
     }
 
@@ -83,8 +87,8 @@ public class JPADocumentCatalogTest {
 
         //then
         assertThat(searchResults.getDocuments().size()).isEqualTo(2);
-        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("0");
-        assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("1");
+        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("1");
+        assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("2");
     }
 
     @Test
@@ -99,7 +103,7 @@ public class JPADocumentCatalogTest {
 
         //then
         assertThat(searchResults.getDocuments().size()).isEqualTo(2);
-        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("3");
+        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("4");
         assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("fancy");
         assertThat(searchResults.getPagesCount()).isEqualTo(2);
         assertThat(searchResults.getPageNumber()).isEqualTo(2);

@@ -13,7 +13,6 @@ import pl.com.bottega.dms.application.user.CurrentUser;
 import pl.com.bottega.dms.application.user.UserRepository;
 import pl.com.bottega.dms.application.user.impl.StandardAuthProcess;
 import pl.com.bottega.dms.application.user.impl.StandardCurrentUser;
-import pl.com.bottega.dms.model.DocumentNumber;
 import pl.com.bottega.dms.model.DocumentRepository;
 import pl.com.bottega.dms.model.numbers.ISONumberGenerator;
 import pl.com.bottega.dms.model.numbers.NumberGenerator;
@@ -22,12 +21,6 @@ import pl.com.bottega.dms.model.printing.RGBPrintCostCalculator;
 
 @org.springframework.context.annotation.Configuration
 public class Configuration {
-
-    private NumberGenerator numberGenerator;
-
-    private PrintCostCalculator printCostCalculator;
-
-    private DocumentRepository documentRepository;
 
     @Bean
     public DocumentFlowProcess documentFlowProcess(NumberGenerator numberGenerator,
@@ -58,13 +51,8 @@ public class Configuration {
     }
 
     @Bean
-    public ReadingConfirmator readingConfirmator(DocumentRepository documentRepository) {
-        return new StandardReadingConfirmator(documentRepository);
-    }
-
-    @Bean
-    public UserRepository userRepository(){
-        return new JPAUserRepository();
+    public ReadingConfirmator readingConfirmator(DocumentRepository repo) {
+        return new StandardReadingConfirmator(repo);
     }
 
     @Bean
@@ -74,9 +62,8 @@ public class Configuration {
 
     @Bean
     @Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
-    public CurrentUser currentUser(){
+    public CurrentUser currentUser() {
         return new StandardCurrentUser();
     }
-
 
 }

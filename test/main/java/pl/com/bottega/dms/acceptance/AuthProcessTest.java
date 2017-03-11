@@ -63,7 +63,7 @@ public class AuthProcessTest {
     }
 
     @Test
-    public void shouldRememberCurrentEmployeeId(){
+    public void shouldRememberCurrentEmployeeId() {
         // given
         CreateAccountCommand cmd = new CreateAccountCommand();
         cmd.setUserName("janek");

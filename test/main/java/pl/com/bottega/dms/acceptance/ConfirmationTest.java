@@ -1,12 +1,16 @@
 package pl.com.bottega.dms.acceptance;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import pl.com.bottega.dms.application.*;
+import pl.com.bottega.dms.application.user.AuthProcess;
 import pl.com.bottega.dms.application.user.AuthRequiedException;
+import pl.com.bottega.dms.application.user.CreateAccountCommand;
+import pl.com.bottega.dms.application.user.LoginCommand;
 import pl.com.bottega.dms.model.DocumentNumber;
 import pl.com.bottega.dms.model.EmployeeId;
 import pl.com.bottega.dms.model.commands.ConfirmDocumentCommand;
@@ -31,6 +35,25 @@ public class ConfirmationTest {
 
     @Autowired
     private ReadingConfirmator readingConfirmator;
+
+    @Autowired
+    private AuthProcess authProcess;
+
+    @Before
+    public void authenticate() {
+        CreateAccountCommand cmd = new CreateAccountCommand();
+        cmd.setUserName("czesiek");
+        cmd.setEmployeeId(2L);
+        cmd.setPassword("xxxx");
+        authProcess.createAccount(cmd);
+
+        LoginCommand loginCommand = new LoginCommand();
+        loginCommand.setLogin("czesiek");
+        loginCommand.setPassword("xxxx");
+        authProcess.login(loginCommand);
+    }
+
+
 
     @Test
     public void shouldConfirmDocument() throws AuthRequiedException {

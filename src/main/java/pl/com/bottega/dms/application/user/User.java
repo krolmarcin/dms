@@ -21,7 +21,6 @@ public class User {
         this.hashedPassword = hashedPassword;
     }
 
-
     public EmployeeId getEmployeeId() {
         return employeeId;
     }
