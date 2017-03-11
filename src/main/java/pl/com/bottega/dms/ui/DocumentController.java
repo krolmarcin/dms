@@ -58,13 +58,13 @@ public class DocumentController {
         documentFlowProcess.publish(cmd);
     }
 
-    @PostMapping("/{documentNumber}/confirmations")
+    @PostMapping("/{documentNumber}/confirmation")
     public void confirm(@PathVariable String documentNumber, @RequestBody ConfirmDocumentCommand cmd) {
         cmd.setNumber(documentNumber);
         readingConfirmator.confirm(cmd);
     }
 
-    @PostMapping("/{documentNumber}/confirmationsfor")
+    @PostMapping("/{documentNumber}/proxy-confirmation")
     public void confirmFor(@PathVariable String documentNumber, @RequestBody ConfirmForDocumentCommand cmd){
         cmd.setNumber(documentNumber);
         readingConfirmator.confirmFor(cmd);
@@ -74,5 +74,7 @@ public class DocumentController {
     public void archive(@PathVariable String documentNumber) {
         documentFlowProcess.archive(new DocumentNumber(documentNumber));
     }
+
+
 
 }
