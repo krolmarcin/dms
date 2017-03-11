@@ -76,6 +76,4 @@ public class DocumentController {
         documentFlowProcess.archive(new DocumentNumber(documentNumber));
     }
 
-
-
 }

@@ -34,7 +34,6 @@ public class StandardDocumentFlowProcess implements DocumentFlowProcess {
     public DocumentNumber create(CreateDocumentCommand cmd) {
         if (currentUser.getEmployeeId() == null)
             throw new AuthRequiedException();
-        cmd.setEmployeeId(currentUser.getEmployeeId());
         Document document = new Document(cmd, numberGenerator);
         documentRepository.put(document);
         return document.getNumber();

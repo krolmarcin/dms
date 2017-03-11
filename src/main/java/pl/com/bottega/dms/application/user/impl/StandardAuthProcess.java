@@ -18,9 +18,9 @@ public class StandardAuthProcess implements AuthProcess {
     @Override
     public AuthResult createAccount(CreateAccountCommand cmd) {
         if (userRepository.findByEmployeeId(new EmployeeId(cmd.getEmployeeId())) != null)
-            return new AuthResult(false, "Podany ID jest zajęty");
+            return new AuthResult(false, "id exists");
         if (userRepository.findByUserName(cmd.getUserName()) != null)
-            return new AuthResult(false, "Podany login juz istnieje");
+            return new AuthResult(false, "login exists");
         User user = new User(new EmployeeId(cmd.getEmployeeId()), cmd.getUserName(), cmd.getPassword());
         userRepository.put(user);
         return AuthResult.success();
