@@ -2,8 +2,6 @@ package pl.com.bottega.dms.application.impl;
 
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.dms.application.DocumentFlowProcess;
-import pl.com.bottega.dms.application.user.AuthRequiedException;
-import pl.com.bottega.dms.application.user.CurrentUser;
 import pl.com.bottega.dms.application.user.RequiresAuth;
 import pl.com.bottega.dms.model.Document;
 import pl.com.bottega.dms.model.DocumentNumber;
