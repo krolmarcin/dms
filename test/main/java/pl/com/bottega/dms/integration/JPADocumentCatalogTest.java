@@ -15,6 +15,7 @@ import pl.com.bottega.dms.application.user.CreateAccountCommand;
 import pl.com.bottega.dms.application.user.LoginCommand;
 import pl.com.bottega.dms.infrastructure.JPADocumentCatalog;
 import pl.com.bottega.dms.infrastructure.JPQLDocumentCatalog;
+import pl.com.bottega.dms.shared.AuthHelper;
 
 import java.time.LocalDateTime;
 
@@ -23,15 +24,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
+@Transactional
 public class JPADocumentCatalogTest {
 
     @Autowired
     private JPADocumentCatalog catalog;
     //private JPQLDocumentCatalog catalog;
 
+    @Autowired
+    private AuthHelper authHelper;
+
+    @Before
+    public void authenticate() {
+        authHelper.authenticate();
+    }
+
     @Test
     @Sql("/fixtures/documentByPhrase.sql")
-    @Transactional
     public void shouldFindDocumentsByPhrase() {
         //given to skrypt documentByPhase.sql
         //when
@@ -45,7 +54,6 @@ public class JPADocumentCatalogTest {
 
     @Test
     @Sql("/fixtures/documentByPhrase.sql")
-    @Transactional
     public void shouldFindDocumentByPhraseAndStatus() {
         //when
         DocumentQuery documentQuery = new DocumentQuery();
@@ -61,7 +69,6 @@ public class JPADocumentCatalogTest {
 
     @Test
     @Sql("/fixtures/documentByPhrase.sql")
-    @Transactional
     public void shouldFindDocumentByCreatorId() {
         //when
         DocumentQuery documentQuery = new DocumentQuery();
@@ -77,7 +84,6 @@ public class JPADocumentCatalogTest {
 
     @Test
     @Sql("/fixtures/documentByPhrase.sql")
-    @Transactional
     public void shouldFindDocumentByCreatedAt() {
         //when
         DocumentQuery documentQuery = new DocumentQuery();
@@ -93,7 +99,6 @@ public class JPADocumentCatalogTest {
 
     @Test
     @Sql("/fixtures/documentByPhrase.sql")
-    @Transactional
     public void shouldReturnPaginatedResults() {
         //when
         DocumentQuery documentQuery = new DocumentQuery();

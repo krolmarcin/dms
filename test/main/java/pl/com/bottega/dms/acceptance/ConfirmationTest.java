@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.dms.application.*;
 import pl.com.bottega.dms.application.user.AuthProcess;
 import pl.com.bottega.dms.application.user.AuthRequiedException;
@@ -17,6 +18,7 @@ import pl.com.bottega.dms.model.commands.ConfirmDocumentCommand;
 import pl.com.bottega.dms.model.commands.ConfirmForDocumentCommand;
 import pl.com.bottega.dms.model.commands.CreateDocumentCommand;
 import pl.com.bottega.dms.model.commands.PublishDocumentCommand;
+import pl.com.bottega.dms.shared.AuthHelper;
 
 import java.util.Arrays;
 
@@ -25,6 +27,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
+@Transactional
 public class ConfirmationTest {
 
     @Autowired
@@ -37,26 +40,15 @@ public class ConfirmationTest {
     private ReadingConfirmator readingConfirmator;
 
     @Autowired
-    private AuthProcess authProcess;
+    private AuthHelper authHelper;
 
     @Before
     public void authenticate() {
-        CreateAccountCommand cmd = new CreateAccountCommand();
-        cmd.setUserName("czesiek");
-        cmd.setEmployeeId(2L);
-        cmd.setPassword("xxxx");
-        authProcess.createAccount(cmd);
-
-        LoginCommand loginCommand = new LoginCommand();
-        loginCommand.setLogin("czesiek");
-        loginCommand.setPassword("xxxx");
-        authProcess.login(loginCommand);
+        authHelper.authenticate();
     }
 
-
-
     @Test
-    public void shouldConfirmDocument() throws AuthRequiedException {
+    public void shouldConfirmDocument() {
         // given
         DocumentNumber documentNumber = publishedDocument();
 
@@ -75,7 +67,7 @@ public class ConfirmationTest {
     }
 
     @Test
-    public void shouldConfirmDocumentForAnotherEmployee() throws AuthRequiedException {
+    public void shouldConfirmDocumentForAnotherEmployee() {
         // given
         DocumentNumber documentNumber = publishedDocument();
 
@@ -95,7 +87,7 @@ public class ConfirmationTest {
         assertThat(confirmationDto.getProxyEmployeeId()).isEqualTo(2L);
     }
 
-    private DocumentNumber publishedDocument() throws AuthRequiedException {
+    private DocumentNumber publishedDocument() {
         DocumentNumber documentNumber = createDocument();
         documentFlowProcess.verify(documentNumber);
         PublishDocumentCommand publishDocumentCommand = new PublishDocumentCommand();
@@ -105,7 +97,7 @@ public class ConfirmationTest {
         return documentNumber;
     }
 
-    private DocumentNumber createDocument() throws AuthRequiedException {
+    private DocumentNumber createDocument() {
         CreateDocumentCommand cmd = new CreateDocumentCommand();
         cmd.setTitle("test");
         return documentFlowProcess.create(cmd);
