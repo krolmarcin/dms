@@ -15,12 +15,13 @@ public class StandardAuthProcess implements AuthProcess {
         this.currentUser = currentUser;
     }
 
+
     @Override
     public AuthResult createAccount(CreateAccountCommand cmd) {
         if (userRepository.findByEmployeeId(new EmployeeId(cmd.getEmployeeId())) != null)
-            return new AuthResult(false, "id exists");
+            return new AuthResult(false, "employee already registered");
         if (userRepository.findByUserName(cmd.getUserName()) != null)
-            return new AuthResult(false, "login exists");
+            return new AuthResult(false, "user name is occupied");
         User user = new User(new EmployeeId(cmd.getEmployeeId()), cmd.getUserName(), cmd.getPassword());
         userRepository.put(user);
         return AuthResult.success();
