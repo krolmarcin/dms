@@ -6,7 +6,7 @@ import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 import java.util.Collection;
 import java.util.List;
 
-public class PublishDocumentCommand {
+public class PublishDocumentCommand implements EmployeeAware {
 
     private EmployeeId employeeId;
 
