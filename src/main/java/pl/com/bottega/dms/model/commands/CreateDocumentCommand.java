@@ -6,8 +6,9 @@ public class CreateDocumentCommand implements EmployeeAware {
 
     private String title;
 
-    private EmployeeId employeeId;
     private String content;
+
+    private EmployeeId employeeId;
 
     public void setTitle(String title) {
         this.title = title;

@@ -6,7 +6,7 @@ import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 import java.util.Collection;
 import java.util.List;
 
-public class PublishDocumentCommand implements EmployeeAware {
+public class PublishDocumentCommand implements EmployeeAware, Validatable {
 
     private EmployeeId employeeId;
 
@@ -38,4 +38,11 @@ public class PublishDocumentCommand implements EmployeeAware {
         this.number = number;
     }
 
+    @Override
+    public void validate(ValidationErrors errors) {
+        if (number == null || number.isEmpty())
+            errors.add("numbers", "can't be blanked");
+        if (recipients == null || recipients.size() == 0)
+            errors.add("recipients", "can't be empty");
+    }
 }

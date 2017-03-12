@@ -2,7 +2,7 @@ package pl.com.bottega.dms.model.commands;
 
 import pl.com.bottega.dms.model.EmployeeId;
 
-public class ConfirmDocumentCommand implements EmployeeAware {
+public class ConfirmDocumentCommand implements EmployeeAware, Validatable {
 
     private String number;
 
@@ -24,4 +24,9 @@ public class ConfirmDocumentCommand implements EmployeeAware {
         this.number = number;
     }
 
+    @Override
+    public void validate(ValidationErrors errors) {
+        if (number == null || number.isEmpty())
+            errors.add("number", "can't be blanked");
+    }
 }

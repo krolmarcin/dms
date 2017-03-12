@@ -2,7 +2,7 @@ package pl.com.bottega.dms.model.commands;
 
 import pl.com.bottega.dms.model.EmployeeId;
 
-public class ChangeDocumentCommand implements EmployeeAware {
+public class ChangeDocumentCommand implements EmployeeAware, Validatable {
 
     private String title;
 
@@ -42,6 +42,16 @@ public class ChangeDocumentCommand implements EmployeeAware {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    @Override
+    public void validate(ValidationErrors errors) {
+        if (number == null || number.isEmpty())
+            errors.add("number", "can't be blanked");
+        if (content == null || content.isEmpty())
+            errors.add("content", "can't be blanked");
+        if (title == null || title.isEmpty())
+            errors.add("title", "can't be blanked");
     }
 
 }

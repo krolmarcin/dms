@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import pl.com.bottega.dms.application.user.AuthRequiedException;
 import pl.com.bottega.dms.model.DocumentStatusException;
+import pl.com.bottega.dms.model.commands.CommandInvalidException;
+import pl.com.bottega.dms.model.commands.Validatable;
 
 @ControllerAdvice
 public class ErrorHandlers {
@@ -31,6 +33,16 @@ public class ErrorHandlers {
                 headers,
                 HttpStatus.UNPROCESSABLE_ENTITY
         );
+    }
+
+    @ExceptionHandler(CommandInvalidException.class)
+    public ResponseEntity<Validatable.ValidationErrors> handleCommandInvalidException(CommandInvalidException ex) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
+        return new ResponseEntity<Validatable.ValidationErrors>(
+                ex.getErrors(),
+                headers,
+                HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
 }
