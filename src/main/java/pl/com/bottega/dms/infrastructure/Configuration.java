@@ -1,5 +1,6 @@
 package pl.com.bottega.dms.infrastructure;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -26,8 +27,9 @@ public class Configuration {
     public DocumentFlowProcess documentFlowProcess(NumberGenerator numberGenerator,
                                                    PrintCostCalculator printCostCalculator,
                                                    DocumentRepository documentRepository,
-                                                   CurrentUser currentUser) {
-        return new StandardDocumentFlowProcess(numberGenerator, printCostCalculator, documentRepository, currentUser);
+                                                   CurrentUser currentUser,
+                                                   ApplicationEventPublisher publisher) {
+        return new StandardDocumentFlowProcess(numberGenerator, printCostCalculator, documentRepository, currentUser, publisher);
     }
 
     @Bean
