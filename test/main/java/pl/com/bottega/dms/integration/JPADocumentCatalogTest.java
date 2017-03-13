@@ -15,6 +15,7 @@ import pl.com.bottega.dms.application.user.CreateAccountCommand;
 import pl.com.bottega.dms.application.user.LoginCommand;
 import pl.com.bottega.dms.infrastructure.JPADocumentCatalog;
 import pl.com.bottega.dms.infrastructure.JPQLDocumentCatalog;
+import pl.com.bottega.dms.model.Document;
 import pl.com.bottega.dms.shared.AuthHelper;
 
 import java.time.LocalDateTime;
@@ -64,7 +65,7 @@ public class JPADocumentCatalogTest {
         //then
         assertThat(searchResults.getDocuments().size()).isEqualTo(2);
         assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("1");
-        assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("fancy");
+        assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("3fancy");
     }
 
     @Test
@@ -76,10 +77,9 @@ public class JPADocumentCatalogTest {
         DocumentSearchResults searchResults = catalog.find(documentQuery);
 
         //then
-        assertThat(searchResults.getDocuments().size()).isEqualTo(3);
+        assertThat(searchResults.getDocuments().size()).isEqualTo(2);
         assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("1");
         assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("2");
-        assertThat(searchResults.getDocuments().get(2).getNumber()).isEqualTo("fancy");
     }
 
     @Test
@@ -108,11 +108,56 @@ public class JPADocumentCatalogTest {
 
         //then
         assertThat(searchResults.getDocuments().size()).isEqualTo(2);
-        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("4");
-        assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("fancy");
+        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("3fancy");
+        assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("4");
         assertThat(searchResults.getPagesCount()).isEqualTo(2);
         assertThat(searchResults.getPageNumber()).isEqualTo(2);
         assertThat(searchResults.getPerPage()).isEqualTo(2);
+    }
+
+    @Test
+    @Sql("/fixtures/documentByPhrase.sql")
+    public void shouldNotFindDocumentsInArchivedStatus() {
+        //when
+        DocumentQuery documentQuery = new DocumentQuery();
+        documentQuery.setStatus("ARCHIVED");
+        DocumentSearchResults searchResults = catalog.find(documentQuery);
+
+        //then
+        assertThat(searchResults.getDocuments().size()).isEqualTo(0);
+    }
+
+    @Test
+    @Sql("/fixtures/documentByPhrase.sql")
+    public void shouldFindDocumentByChangedAtButNotInStatusArchived() {
+        //changedAt = 2017-01-05 10:44:00, one in DRAFT, second in ARCHIVED
+        //when
+        DocumentQuery documentQuery = new DocumentQuery();
+        documentQuery.setChangedAfter(LocalDateTime.parse("2017-01-05T10:43:00"));
+        documentQuery.setChangedBefore(LocalDateTime.parse("2017-01-05T10:45:00"));
+        DocumentSearchResults searchResults = catalog.find(documentQuery);
+
+        //then - only one in DRAFT, but not in ARCHIVED
+        assertThat(searchResults.getDocuments().size()).isEqualTo(1);
+    }
+
+    @Test
+    @Sql("/fixtures/documentByPhrase.sql")
+    public void shouldFindDocumentByCreatorEditorVerifierPublisherIdsSortByNumberAsc(){
+        //when - creator_id, editor_id, verifier_id, publisher_id - '10','20','30','40';
+        DocumentQuery documentQuery = new DocumentQuery();
+        documentQuery.setCreatorId(10L);
+        documentQuery.setEditorId(20L);
+        documentQuery.setVerifierId(30L);
+        documentQuery.setPublisherId(40L);
+        documentQuery.setSortBy("number");
+        documentQuery.setSortOrder("asc");
+        DocumentSearchResults searchResults = catalog.find(documentQuery);
+
+        //then
+        assertThat(searchResults.getDocuments().size()).isEqualTo(2);
+        assertThat(searchResults.getDocuments().get(0).getNumber()).isEqualTo("4");
+        assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("3fancy");
     }
 
 }

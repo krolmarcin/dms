@@ -55,8 +55,8 @@ public class JPADocumentCatalog implements DocumentCatalog {
         return getDocumentDtos(documents);
     }
 
-    private void setSortCriteria(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, CriteriaQuery<Document> criteriaQuery, Root<Document> root){
-        if (documentQuery.getSortBy() != null){
+    private void setSortCriteria(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, CriteriaQuery<Document> criteriaQuery, Root<Document> root) {
+        if (documentQuery.getSortBy() != null) {
             if (documentQuery.getSortOrder() == null || documentQuery.getSortBy().equals("asc"))
                 criteriaQuery.orderBy(criteriaBuilder.asc(root.get(documentQuery.getSortBy())));
             else
@@ -92,41 +92,42 @@ public class JPADocumentCatalog implements DocumentCatalog {
         addVerifiedAfterPredicate(documentQuery, criteriaBuilder, root, predicates);
         addPublishedBeforePredicate(documentQuery, criteriaBuilder, root, predicates);
         addPublishedAfterPredicate(documentQuery, criteriaBuilder, root, predicates);
+        addNotArchivedPredicate(criteriaBuilder, root, predicates);
         return predicates;
     }
 
     private void addPublishedAfterPredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
-        if (documentQuery.getPublishedAfter() != null){
+        if (documentQuery.getPublishedAfter() != null) {
             predicates.add(criteriaBuilder.greaterThan(root.get("publishedAt"), documentQuery.getPublishedAfter()));
         }
     }
 
     private void addPublishedBeforePredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
-        if (documentQuery.getPublishedBefore() != null){
+        if (documentQuery.getPublishedBefore() != null) {
             predicates.add(criteriaBuilder.lessThan(root.get("publishedAt"), documentQuery.getPublishedBefore()));
         }
     }
 
     private void addVerifiedAfterPredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
-        if (documentQuery.getVerifiedAfter() != null){
+        if (documentQuery.getVerifiedAfter() != null) {
             predicates.add(criteriaBuilder.greaterThan(root.get("verifiedAt"), documentQuery.getVerifiedAfter()));
         }
     }
 
     private void addVerifiedBeforePredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
-        if (documentQuery.getVerifiedBefore() != null){
+        if (documentQuery.getVerifiedBefore() != null) {
             predicates.add(criteriaBuilder.lessThan(root.get("verifiedAt"), documentQuery.getVerifiedBefore()));
         }
     }
 
     private void addChangedAfterPredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
-        if (documentQuery.getChangedAfter() != null){
+        if (documentQuery.getChangedAfter() != null) {
             predicates.add(criteriaBuilder.greaterThan(root.get("changedAt"), documentQuery.getChangedAfter()));
         }
     }
 
     private void addChangedBeforePredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
-        if (documentQuery.getChangedBefore() != null){
+        if (documentQuery.getChangedBefore() != null) {
             predicates.add(criteriaBuilder.lessThan(root.get("changedAt"), documentQuery.getChangedBefore()));
         }
     }
@@ -150,19 +151,19 @@ public class JPADocumentCatalog implements DocumentCatalog {
     }
 
     private void addPublisherIdPredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
-        if (documentQuery.getPublisherId() != null){
+        if (documentQuery.getPublisherId() != null) {
             predicates.add(criteriaBuilder.equal(root.get("publisherId").get("id"), documentQuery.getPublisherId()));
         }
     }
 
     private void addVerifierIdPredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
-        if (documentQuery.getVerifierId() != null){
+        if (documentQuery.getVerifierId() != null) {
             predicates.add(criteriaBuilder.equal(root.get("verifierId").get("id"), documentQuery.getVerifierId()));
         }
     }
 
     private void addEditorIdPredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
-        if (documentQuery.getEditorId() != null){
+        if (documentQuery.getEditorId() != null) {
             predicates.add(criteriaBuilder.equal(root.get("editorId").get("id"), documentQuery.getEditorId()));
         }
     }
@@ -171,6 +172,10 @@ public class JPADocumentCatalog implements DocumentCatalog {
         if (documentQuery.getStatus() != null) {
             predicates.add(criteriaBuilder.equal(root.get("status"), DocumentStatus.valueOf(documentQuery.getStatus())));
         }
+    }
+
+    private void addNotArchivedPredicate(CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
+        predicates.add(criteriaBuilder.notEqual(root.get("status"), DocumentStatus.valueOf("ARCHIVED")));
     }
 
     private void addPhrasePredicate(DocumentQuery documentQuery, CriteriaBuilder criteriaBuilder, Root<Document> root, Set<Predicate> predicates) {
