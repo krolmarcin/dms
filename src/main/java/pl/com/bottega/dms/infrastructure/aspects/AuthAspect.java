@@ -24,8 +24,9 @@ public class AuthAspect {
         isUserAuth();
         isUserHasRole(requiresAuth);
     }
+
     @Before(value = "@annotation(requiresAuth)")
-    public void ensureMethodAuth(RequiresAuth requiresAuth){
+    public void ensureMethodAuth(RequiresAuth requiresAuth) {
         isUserAuth();
         isUserHasRole(requiresAuth);
     }
