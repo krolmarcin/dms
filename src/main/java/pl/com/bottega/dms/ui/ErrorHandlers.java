@@ -15,11 +15,11 @@ import pl.com.bottega.dms.model.commands.Validatable;
 public class ErrorHandlers {
 
     @ExceptionHandler(AuthRequiedException.class)
-    public ResponseEntity<String> handleAuthRequiredException() {
+    public ResponseEntity<String> handleAuthRequiredException(AuthRequiedException ex) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
         return new ResponseEntity<String>(
-                "{\"error\": \"authentication_requied\"}",
+                String.format("{\"error\": \"authentication_requied\", \"detais\": \"%s\"}", ex.getMessage()),
                 headers,
                 HttpStatus.UNAUTHORIZED
         );
