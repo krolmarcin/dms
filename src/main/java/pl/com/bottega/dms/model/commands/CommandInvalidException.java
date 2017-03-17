@@ -5,6 +5,7 @@ public class CommandInvalidException extends RuntimeException {
     private Validatable.ValidationErrors errors;
 
     public CommandInvalidException(Validatable.ValidationErrors errors) {
+
         this.errors = errors;
     }
 

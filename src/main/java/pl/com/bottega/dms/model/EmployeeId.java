@@ -4,7 +4,7 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
-public class EmployeeId implements Serializable{
+public class EmployeeId implements Serializable {
 
     private Long id;
 

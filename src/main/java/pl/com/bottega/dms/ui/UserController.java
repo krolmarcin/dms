@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.com.bottega.dms.application.user.AuthProcess;
+import pl.com.bottega.dms.application.user.AuthResult;
 import pl.com.bottega.dms.application.user.CreateAccountCommand;
 
 @RestController
@@ -18,8 +19,8 @@ public class UserController {
     }
 
     @PostMapping
-    public void create(@RequestBody CreateAccountCommand cmd){
-        authProcess.createAccount(cmd);
+    public AuthResult create(@RequestBody CreateAccountCommand cmd) {
+        return authProcess.createAccount(cmd);
     }
 
 }

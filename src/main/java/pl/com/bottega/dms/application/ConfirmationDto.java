@@ -5,8 +5,11 @@ import java.time.LocalDateTime;
 public class ConfirmationDto {
 
     private boolean confirmed;
+
     private Long ownerEmployeeId;
+
     private Long proxyEmployeeId;
+
     private LocalDateTime confirmedAt;
 
     public boolean isConfirmed() {
@@ -40,4 +43,5 @@ public class ConfirmationDto {
     public void setProxyEmployeeId(Long proxyEmployeeId) {
         this.proxyEmployeeId = proxyEmployeeId;
     }
+
 }

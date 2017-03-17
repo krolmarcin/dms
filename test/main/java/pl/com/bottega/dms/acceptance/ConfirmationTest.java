@@ -91,7 +91,7 @@ public class ConfirmationTest {
         DocumentNumber documentNumber = createDocument();
         documentFlowProcess.verify(documentNumber);
         PublishDocumentCommand publishDocumentCommand = new PublishDocumentCommand();
-        publishDocumentCommand.setNumber(documentNumber.getNumber());
+        publishDocumentCommand.setDocumentNumber(documentNumber.getNumber());
         publishDocumentCommand.setRecipients(Arrays.asList(new EmployeeId(1L)));
         documentFlowProcess.publish(publishDocumentCommand);
         return documentNumber;
@@ -100,6 +100,7 @@ public class ConfirmationTest {
     private DocumentNumber createDocument() {
         CreateDocumentCommand cmd = new CreateDocumentCommand();
         cmd.setTitle("test");
+        cmd.setContent("test content");
         return documentFlowProcess.create(cmd);
     }
 

@@ -1,18 +1,16 @@
 package pl.com.bottega.dms.model.commands;
 
 import pl.com.bottega.dms.model.EmployeeId;
-import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 
 import java.util.Collection;
-import java.util.List;
 
-public class PublishDocumentCommand implements EmployeeAware, Validatable {
+public class PublishDocumentCommand implements EmployeeAware, Validatable{
 
     private EmployeeId employeeId;
 
     private Collection<EmployeeId> recipients;
 
-    private String number;
+    private String documentNumber;
 
     public EmployeeId getEmployeeId() {
         return employeeId;
@@ -30,19 +28,20 @@ public class PublishDocumentCommand implements EmployeeAware, Validatable {
         return recipients;
     }
 
-    public String getNumber() {
-        return number;
+    public String getDocumentNumber() {
+        return documentNumber;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public void setDocumentNumber(String documentNumber) {
+        this.documentNumber = documentNumber;
     }
 
     @Override
     public void validate(ValidationErrors errors) {
-        if (number == null || number.isEmpty())
-            errors.add("numbers", "can't be blanked");
-        if (recipients == null || recipients.size() == 0)
-            errors.add("recipients", "can't be empty");
+        if(documentNumber == null || documentNumber.isEmpty())
+            errors.add("documentNumber", "Can't be blank");
+        if(recipients == null || recipients.size() == 0)
+            errors.add("recipients", "Can't be blank");
     }
+
 }

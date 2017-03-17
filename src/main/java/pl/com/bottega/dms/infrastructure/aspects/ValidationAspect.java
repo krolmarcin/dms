@@ -10,13 +10,14 @@ import pl.com.bottega.dms.model.commands.Validatable;
 @Aspect
 public class ValidationAspect {
 
+
     @Before("execution(* pl.com.bottega.dms.application..*.*(..)) " +
-            "&& args(pl.com.bottega.dms.model.commands.Validatable) " +
+            "&& args(pl.com.bottega.dms.model.commands.EmployeeAware) " +
             "&& args(validatable)")
-    public void validate(Validatable validatable) {
+    public void setEmployeeId(Validatable validatable) {
         Validatable.ValidationErrors errors = new Validatable.ValidationErrors();
         validatable.validate(errors);
-        if (!errors.isValid())
+        if(!errors.isValid())
             throw new CommandInvalidException(errors);
     }
 

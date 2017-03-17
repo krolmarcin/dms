@@ -17,12 +17,12 @@ public class SessionController {
         this.authProcess = authProcess;
     }
 
-    @PostMapping()
+    @PostMapping
     public AuthResult create(@RequestBody LoginCommand loginCommand) {
         return authProcess.login(loginCommand);
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     public void destroy(HttpSession httpSession) {
         httpSession.invalidate();
     }

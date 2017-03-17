@@ -2,13 +2,13 @@ package pl.com.bottega.dms.model.commands;
 
 import pl.com.bottega.dms.model.EmployeeId;
 
-public class ConfirmForDocumentCommand implements EmployeeAware, Validatable {
-
-    private String number;
+public class ConfirmForDocumentCommand implements EmployeeAware, Validatable{
 
     private EmployeeId employeeId;
 
     private EmployeeId confirmingEmployeeId;
+
+    private String number;
 
     public EmployeeId getEmployeeId() {
         return employeeId;
@@ -36,7 +36,8 @@ public class ConfirmForDocumentCommand implements EmployeeAware, Validatable {
 
     @Override
     public void validate(ValidationErrors errors) {
-        if (number == null || number.isEmpty())
-            errors.add("number", "can't be blanked");
+        if(confirmingEmployeeId == null || confirmingEmployeeId.getId() == null)
+            errors.add("confirmingEmployeeId", "Can't be blank");
     }
+
 }

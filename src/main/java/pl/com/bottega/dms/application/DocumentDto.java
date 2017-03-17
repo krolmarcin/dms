@@ -1,30 +1,18 @@
 package pl.com.bottega.dms.application;
 
-import pl.com.bottega.dms.model.DocumentStatus;
-import pl.com.bottega.dms.model.EmployeeId;
-
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public class DocumentDto {
 
     private String title;
     private String number;
+
     private String content;
+
     private String status;
     private List<ConfirmationDto> confirmations;
     private Long creatorId;
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     private LocalDateTime createdAt;
 
     public String getTitle() {
@@ -74,4 +62,13 @@ public class DocumentDto {
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
     }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
 }

@@ -107,7 +107,7 @@ public class DocumentFlowTest {
 
         //when
         PublishDocumentCommand cmd = new PublishDocumentCommand();
-        cmd.setNumber(documentNumber.getNumber());
+        cmd.setDocumentNumber(documentNumber.getNumber());
         cmd.setRecipients(Arrays.asList(new EmployeeId(1L)));
         documentFlowProcess.publish(cmd);
 
@@ -119,6 +119,7 @@ public class DocumentFlowTest {
     private DocumentNumber createDocument() {
         CreateDocumentCommand cmd = new CreateDocumentCommand();
         cmd.setTitle("test");
+        cmd.setContent("test content");
         return documentFlowProcess.create(cmd);
     }
 

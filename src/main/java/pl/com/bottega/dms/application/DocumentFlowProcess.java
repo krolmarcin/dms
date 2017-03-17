@@ -1,6 +1,5 @@
 package pl.com.bottega.dms.application;
 
-import pl.com.bottega.dms.application.user.AuthRequiedException;
 import pl.com.bottega.dms.model.DocumentNumber;
 import pl.com.bottega.dms.model.commands.ChangeDocumentCommand;
 import pl.com.bottega.dms.model.commands.CreateDocumentCommand;
@@ -8,7 +7,7 @@ import pl.com.bottega.dms.model.commands.PublishDocumentCommand;
 
 public interface DocumentFlowProcess {
 
-    DocumentNumber create(CreateDocumentCommand cmd) throws AuthRequiedException;
+    DocumentNumber create(CreateDocumentCommand cmd);
 
     void change(ChangeDocumentCommand cmd);
 

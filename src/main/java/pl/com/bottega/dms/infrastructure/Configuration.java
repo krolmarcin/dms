@@ -28,8 +28,25 @@ public class Configuration {
                                                    PrintCostCalculator printCostCalculator,
                                                    DocumentRepository documentRepository,
                                                    CurrentUser currentUser,
-                                                   ApplicationEventPublisher publisher) {
+                                                   ApplicationEventPublisher publisher
+    ) {
         return new StandardDocumentFlowProcess(numberGenerator, printCostCalculator, documentRepository, currentUser, publisher);
+    }
+
+    @Bean
+    public AuthProcess authProcess(UserRepository userRepository, CurrentUser currentUser) {
+        return new StandardAuthProcess(userRepository, currentUser);
+    }
+
+    @Bean
+    @Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
+    public CurrentUser currentUser() {
+        return new StandardCurrentUser();
+    }
+
+    @Bean
+    public UserRepository userRepository() {
+        return new JPAUserRepository();
     }
 
     @Bean
@@ -55,17 +72,6 @@ public class Configuration {
     @Bean
     public ReadingConfirmator readingConfirmator(DocumentRepository repo) {
         return new StandardReadingConfirmator(repo);
-    }
-
-    @Bean
-    public AuthProcess authProcess(UserRepository userRepository, CurrentUser currentUser) {
-        return new StandardAuthProcess(userRepository, currentUser);
-    }
-
-    @Bean
-    @Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
-    public CurrentUser currentUser() {
-        return new StandardCurrentUser();
     }
 
 }
