@@ -48,6 +48,7 @@ public class DocumentController {
         return documentCatalog.find(documentQuery);
     }
 
+
     @PostMapping("/{documentNumber}/verification")
     public void verify(@PathVariable String documentNumber) {
         documentFlowProcess.verify(new DocumentNumber(documentNumber));

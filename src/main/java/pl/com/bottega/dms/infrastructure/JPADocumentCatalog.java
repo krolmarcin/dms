@@ -194,9 +194,13 @@ public class JPADocumentCatalog implements DocumentCatalog {
     public DocumentDto get(DocumentNumber documentNumber) {
         Query query = entityManager.createQuery("FROM Document d LEFT JOIN FETCH d.confirmations WHERE d.number = :nr");
         query.setParameter("nr", documentNumber);
-        Document document = (Document) query.getResultList().get(0);
-        DocumentDto documentDto = createDocumentDto(document);
-        return documentDto;
+        if (query.getResultList().isEmpty())
+            throw new DocumentNotFoundException(String.format("Document number %s does not exists", documentNumber.getNumber()));
+        else {
+            Document document = (Document) query.getResultList().get(0);
+            DocumentDto documentDto = createDocumentDto(document);
+            return documentDto;
+        }
     }
 
     private DocumentDto createDocumentDto(Document document) {

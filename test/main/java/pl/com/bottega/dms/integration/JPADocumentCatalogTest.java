@@ -13,9 +13,11 @@ import pl.com.bottega.dms.application.DocumentSearchResults;
 import pl.com.bottega.dms.application.user.AuthProcess;
 import pl.com.bottega.dms.application.user.CreateAccountCommand;
 import pl.com.bottega.dms.application.user.LoginCommand;
+import pl.com.bottega.dms.infrastructure.DocumentNotFoundException;
 import pl.com.bottega.dms.infrastructure.JPADocumentCatalog;
 import pl.com.bottega.dms.infrastructure.JPQLDocumentCatalog;
 import pl.com.bottega.dms.model.Document;
+import pl.com.bottega.dms.model.DocumentNumber;
 import pl.com.bottega.dms.shared.AuthHelper;
 
 import java.time.LocalDateTime;
@@ -143,8 +145,8 @@ public class JPADocumentCatalogTest {
 
     @Test
     @Sql("/fixtures/documentByPhrase.sql")
-    public void shouldFindDocumentByCreatorEditorVerifierPublisherIdsSortByNumberAsc(){
-        //when - creator_id, editor_id, verifier_id, publisher_id - '10','20','30','40';
+    public void shouldFindDocumentByCreatorEditorVerifierPublisherIdsSortByNumberAsc() {
+        //when - creator_id, editor_id, verifier_id, publisher_id - '10','20','30','40' + sort by number + asc;
         DocumentQuery documentQuery = new DocumentQuery();
         documentQuery.setCreatorId(10L);
         documentQuery.setEditorId(20L);
@@ -160,4 +162,14 @@ public class JPADocumentCatalogTest {
         assertThat(searchResults.getDocuments().get(1).getNumber()).isEqualTo("3fancy");
     }
 
-}
+    @Test(expected = DocumentNotFoundException.class)
+    @Sql("/fixtures/documentByPhrase.sql")
+    public void shouldFindDocumentsByNumber() {
+        //when
+        catalog.get(new DocumentNumber("1111"));
+
+        //then
+    }
+
+
+    }
