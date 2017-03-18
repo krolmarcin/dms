@@ -13,12 +13,7 @@ public class DocumentPublishedEmailNotifier {
     @TransactionalEventListener
     @Async
     public void documentPublished(DocumentPublishedEvent documentPublishedEvent) {
-        try {
-            Thread.sleep(3000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Logger.getLogger(DocumentPublishedEvent.class).info("Mailing to recipents!");
+        Logger.getLogger(DocumentPublishedEmailNotifier.class).info("Mailing to recipents!");
     }
 
 }

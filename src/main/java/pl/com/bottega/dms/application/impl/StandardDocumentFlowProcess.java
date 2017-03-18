@@ -1,6 +1,7 @@
 package pl.com.bottega.dms.application.impl;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.dms.application.DocumentFlowProcess;
 import pl.com.bottega.dms.application.user.CurrentUser;
@@ -15,7 +16,7 @@ import pl.com.bottega.dms.model.events.DocumentPublishedEvent;
 import pl.com.bottega.dms.model.numbers.NumberGenerator;
 import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 
-@Transactional
+@Transactional(isolation = Isolation.REPEATABLE_READ)
 public class StandardDocumentFlowProcess implements DocumentFlowProcess {
 
     private NumberGenerator numberGenerator;
