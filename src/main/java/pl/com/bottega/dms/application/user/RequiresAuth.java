@@ -6,6 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequiresAuth {
 
-    String[] role() default {"STAFF"};
+    String[] value() default {};
 
 }

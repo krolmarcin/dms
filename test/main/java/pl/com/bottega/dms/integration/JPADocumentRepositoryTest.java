@@ -1,6 +1,5 @@
 package pl.com.bottega.dms.integration;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-import pl.com.bottega.dms.infrastructure.DocumentNotFoundException;
+import pl.com.bottega.dms.model.DocumentNotFoundException;
 import pl.com.bottega.dms.infrastructure.JPADocumentRepository;
 import pl.com.bottega.dms.model.Document;
 import pl.com.bottega.dms.model.DocumentNumber;
-import pl.com.bottega.dms.model.DocumentStatusException;
-import pl.com.bottega.dms.shared.AuthHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

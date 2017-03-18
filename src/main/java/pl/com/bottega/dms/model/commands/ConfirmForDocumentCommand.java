@@ -2,13 +2,12 @@ package pl.com.bottega.dms.model.commands;
 
 import pl.com.bottega.dms.model.EmployeeId;
 
-public class ConfirmForDocumentCommand implements EmployeeAware, Validatable{
 
+public class ConfirmForDocumentCommand implements EmployeeAware, Validatable {
     private EmployeeId employeeId;
-
-    private EmployeeId confirmingEmployeeId;
-
+    private EmployeeId confirmForEmployeeId;
     private String number;
+    private EmployeeId confirmingEmployeeId;
 
     public EmployeeId getEmployeeId() {
         return employeeId;
@@ -16,14 +15,6 @@ public class ConfirmForDocumentCommand implements EmployeeAware, Validatable{
 
     public void setEmployeeId(EmployeeId employeeId) {
         this.employeeId = employeeId;
-    }
-
-    public EmployeeId getConfirmingEmployeeId() {
-        return confirmingEmployeeId;
-    }
-
-    public void setConfirmingEmployeeId(EmployeeId confirmingEmployeeId) {
-        this.confirmingEmployeeId = confirmingEmployeeId;
     }
 
     public String getNumber() {
@@ -35,9 +26,22 @@ public class ConfirmForDocumentCommand implements EmployeeAware, Validatable{
     }
 
     @Override
-    public void validate(ValidationErrors errors) {
-        if(confirmingEmployeeId == null || confirmingEmployeeId.getId() == null)
-            errors.add("confirmingEmployeeId", "Can't be blank");
+    public void validate(Validatable.ValidationErrors errors) {
+        if (isEmpty(number))
+            errors.add("number", "can't be blank");
+        if(confirmForEmployeeId == null)
+            errors.add("confirmForEmployeeId", "can't be blank");
     }
 
+    public EmployeeId getConfirmForEmployeeId() {
+        return confirmForEmployeeId;
+    }
+
+    public void setConfirmForEmployeeId(EmployeeId confirmForEmployeeId) {
+        this.confirmForEmployeeId = confirmForEmployeeId;
+    }
+
+    public void setConfirmingEmployeeId(EmployeeId confirmingEmployeeId) {
+        this.confirmingEmployeeId = confirmingEmployeeId;
+    }
 }

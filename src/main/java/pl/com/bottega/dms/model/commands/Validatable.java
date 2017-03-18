@@ -2,12 +2,16 @@ package pl.com.bottega.dms.model.commands;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.Map;
 
 public interface Validatable {
 
     void validate(ValidationErrors errors);
+
+    default boolean isEmpty(String s) {
+        return s == null || s.isEmpty();
+    }
 
     class ValidationErrors {
 

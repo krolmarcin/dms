@@ -2,14 +2,10 @@ package pl.com.bottega.dms.model.commands;
 
 import pl.com.bottega.dms.model.EmployeeId;
 
-public class ChangeDocumentCommand implements EmployeeAware, Validatable{
-
+public class ChangeDocumentCommand implements EmployeeAware, Validatable {
     private String title;
-
     private String content;
-
     private EmployeeId employeeId;
-
     private String number;
 
     public void setTitle(String title) {
@@ -46,10 +42,11 @@ public class ChangeDocumentCommand implements EmployeeAware, Validatable{
 
     @Override
     public void validate(ValidationErrors errors) {
-        if(title == null || title.isEmpty())
-            errors.add("title", "Can't be blank");
-        if(content == null || content.isEmpty())
-            errors.add("content", "Can't be blank");
+        if (isEmpty(title))
+            errors.add("title", "can't be blank");
+        if (isEmpty(content))
+            errors.add("content", "can't be blank");
+        if (isEmpty(number))
+            errors.add("number", "can't be blank");
     }
-
 }

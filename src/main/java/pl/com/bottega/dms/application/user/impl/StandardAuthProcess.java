@@ -6,7 +6,6 @@ import pl.com.bottega.dms.model.EmployeeId;
 
 @Transactional
 public class StandardAuthProcess implements AuthProcess {
-
     private UserRepository userRepository;
     private CurrentUser currentUser;
 
@@ -14,7 +13,6 @@ public class StandardAuthProcess implements AuthProcess {
         this.userRepository = userRepository;
         this.currentUser = currentUser;
     }
-
 
     @Override
     public AuthResult createAccount(CreateAccountCommand cmd) {
@@ -33,7 +31,8 @@ public class StandardAuthProcess implements AuthProcess {
         if (user != null) {
             currentUser.setEmployeeId(user.getEmployeeId());
             return AuthResult.success();
-        } else
+        }
+        else
             return new AuthResult(false, "invalid login or password");
     }
 

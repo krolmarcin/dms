@@ -23,13 +23,13 @@ public class StandardCurrentUser implements CurrentUser {
 
     @Override
     public Set<String> getRoles() {
-        if (employeeId.getId() == 1L)
-            return new HashSet<>(Arrays.asList("STAFF", "QUALITY_STAFF", "QUALITY_MANAGER"));
-        else if (employeeId.getId() == 2L)
-            return new HashSet<>(Arrays.asList("STAFF", "QUALITY_STAFF"));
+        Set<String> roles = new HashSet<>();
+        if (employeeId.getId().equals(1L) || employeeId.getId().equals(0L))
+            roles.addAll(Arrays.asList("STAFF", "QUALITY_STAFF", "QUALITY_MANAGER"));
+        else if (employeeId.getId().equals(2L))
+            roles.addAll(Arrays.asList("STAFF", "QUALITY_STAFF"));
         else
-            return new HashSet<>(Arrays.asList("STAFF"));
+            roles.add("STAFF");
+        return roles;
     }
-
-
 }

@@ -3,11 +3,11 @@ package pl.com.bottega.dms.infrastructure.aspects;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
-import pl.com.bottega.dms.application.user.AuthRequiedException;
+import pl.com.bottega.dms.application.user.AuthRequiredException;
 import pl.com.bottega.dms.application.user.CurrentUser;
 import pl.com.bottega.dms.application.user.RequiresAuth;
 
-import java.util.Set;
+import java.util.Arrays;
 
 @Component
 @Aspect
@@ -19,33 +19,21 @@ public class AuthAspect {
         this.currentUser = currentUser;
     }
 
-    @Before(value = "@within(requiresAuth)")
-    public void ensureClassAuth(RequiresAuth requiresAuth) {
-        isUserAuth();
-        isUserHasRole(requiresAuth);
+    @Before("@annotation(requiresAuth)")
+    public void ensureAuthAnnotation(RequiresAuth requiresAuth) {
+        checkAuth(requiresAuth);
     }
 
-    @Before(value = "@annotation(requiresAuth)")
-    public void ensureMethodAuth(RequiresAuth requiresAuth) {
-        isUserAuth();
-        isUserHasRole(requiresAuth);
+    @Before("@within(requiresAuth)")
+    public void ensureAuthWithin(RequiresAuth requiresAuth) {
+        checkAuth(requiresAuth);
     }
 
-    private void isUserHasRole(RequiresAuth requiresAuth) {
-        String[] roles = requiresAuth.role();
-        Set<String> currentUserRoles = currentUser.getRoles();
-        for (String role : roles) {
-            if (!currentUserRoles.contains(role)) {
-                throw new AuthRequiedException("You have no priveleges for this operation");
-            }
-        }
+    private void checkAuth(RequiresAuth requiresAuth) {
+        if(currentUser.getEmployeeId() == null)
+            throw new AuthRequiredException("No authenticated user");
+        if(!currentUser.getRoles().containsAll(Arrays.asList(requiresAuth.value())))
+            throw new AuthRequiredException("User is not authorized");
     }
-
-    private void isUserAuth() {
-        if (currentUser.getEmployeeId() == null) {
-            throw new AuthRequiedException("You heave to be authorized");
-        }
-    }
-
 
 }

@@ -1,13 +1,10 @@
 package pl.com.bottega.dms.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import pl.com.bottega.dms.model.commands.*;
 import pl.com.bottega.dms.model.numbers.NumberGenerator;
 import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 
 import javax.persistence.*;
-import javax.xml.crypto.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -54,7 +51,6 @@ public class Document {
         this.number = numberGenerator.generate();
         this.status = DRAFT;
         this.title = cmd.getTitle();
-        this.content = cmd.getContent();
         this.createdAt = LocalDateTime.now();
         this.creatorId = cmd.getEmployeeId();
         this.confirmations = new HashSet<>();
@@ -104,8 +100,8 @@ public class Document {
     }
 
     public void confirmFor(ConfirmForDocumentCommand cmd) {
-        Confirmation confirmation = getConfirmation(cmd.getEmployeeId());
-        confirmation.confirmFor(cmd.getConfirmingEmployeeId());
+        Confirmation confirmation = getConfirmation(cmd.getConfirmForEmployeeId());
+        confirmation.confirmFor(cmd.getEmployeeId());
     }
 
     public DocumentStatus getStatus() {
@@ -179,5 +175,4 @@ public class Document {
         }
         throw new DocumentStatusException(String.format("No confirmation for %s", employeeId));
     }
-
 }

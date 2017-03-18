@@ -10,13 +10,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.dms.application.DocumentQuery;
 import pl.com.bottega.dms.application.DocumentSearchResults;
-import pl.com.bottega.dms.application.user.AuthProcess;
-import pl.com.bottega.dms.application.user.CreateAccountCommand;
-import pl.com.bottega.dms.application.user.LoginCommand;
-import pl.com.bottega.dms.infrastructure.DocumentNotFoundException;
+import pl.com.bottega.dms.model.DocumentNotFoundException;
 import pl.com.bottega.dms.infrastructure.JPADocumentCatalog;
-import pl.com.bottega.dms.infrastructure.JPQLDocumentCatalog;
-import pl.com.bottega.dms.model.Document;
 import pl.com.bottega.dms.model.DocumentNumber;
 import pl.com.bottega.dms.shared.AuthHelper;
 
