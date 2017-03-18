@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import pl.com.bottega.dms.model.commands.*;
+import pl.com.bottega.dms.model.numbers.ISONumberGenerator;
 import pl.com.bottega.dms.model.numbers.NumberGenerator;
 import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 
@@ -345,13 +346,13 @@ public class DocumentTest {
     //3a. Ten sam employee nie może potwierdzić dokumentu dwa razy (powinien wylecieć wyjątek) confirmFor
     public void shouldNotAllowConfirmForByEmployeeMoreThanOnce() {
         //given - published document for EmployeeId(3L)
-        EmployeeId employeeId = new EmployeeId(300L);
+        EmployeeId employeeId = new EmployeeId(1L);
         Document document = given().publishedDocument(employeeId);
 
         //when - employee try confirmFor more than once
         ConfirmForDocumentCommand cmd = new ConfirmForDocumentCommand();
         cmd.setEmployeeId(employeeId);
-        EmployeeId proxy = new EmployeeId(301L);
+        EmployeeId proxy = new EmployeeId(2L);
         cmd.setConfirmingEmployeeId(proxy);
         document.confirmFor(cmd);
         document.confirmFor(cmd);
@@ -417,9 +418,9 @@ public class DocumentTest {
             CreateDocumentCommand cmd = new CreateDocumentCommand();
             cmd.setTitle("test title");
             cmd.setEmployeeId(employeeId);
-            NumberGenerator numberGenerator = mock(NumberGenerator.class);
-            when(numberGenerator.generate()).thenReturn(anyDocumentNumber());
-            return new Document(cmd, numberGenerator);
+            NumberGenerator numberGenerator = new ISONumberGenerator();
+            DocumentFactory documentFactory = new DocumentFactory(numberGenerator);
+            return documentFactory.createDocument(cmd);
         }
 
         public Document verifiedDocument() {

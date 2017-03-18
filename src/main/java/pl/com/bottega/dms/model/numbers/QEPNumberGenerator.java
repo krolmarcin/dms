@@ -4,7 +4,7 @@ import pl.com.bottega.dms.model.DocumentNumber;
 
 import java.util.UUID;
 
-public class QEPNumberGenerators implements NumberGenerator {
+public class QEPNumberGenerator implements NumberGenerator {
 
     public DocumentNumber generate() {
         return new DocumentNumber("QEP" + UUID.randomUUID().toString());

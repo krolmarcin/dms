@@ -1,5 +1,6 @@
 package pl.com.bottega.dms.infrastructure;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -7,7 +8,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -21,9 +21,11 @@ import pl.com.bottega.dms.application.user.CurrentUser;
 import pl.com.bottega.dms.application.user.UserRepository;
 import pl.com.bottega.dms.application.user.impl.StandardAuthProcess;
 import pl.com.bottega.dms.application.user.impl.StandardCurrentUser;
+import pl.com.bottega.dms.model.DocumentFactory;
 import pl.com.bottega.dms.model.DocumentRepository;
 import pl.com.bottega.dms.model.numbers.ISONumberGenerator;
 import pl.com.bottega.dms.model.numbers.NumberGenerator;
+import pl.com.bottega.dms.model.numbers.QEPNumberGenerator;
 import pl.com.bottega.dms.model.printing.PrintCostCalculator;
 import pl.com.bottega.dms.model.printing.RGBPrintCostCalculator;
 
@@ -34,19 +36,33 @@ import java.util.concurrent.Executor;
 public class Configuration extends AsyncConfigurerSupport {
 
     @Bean
-    public DocumentFlowProcess documentFlowProcess(NumberGenerator numberGenerator,
-                                                   PrintCostCalculator printCostCalculator,
+    public DocumentFlowProcess documentFlowProcess(DocumentFactory documentFactory, PrintCostCalculator printCostCalculator,
                                                    DocumentRepository documentRepository,
                                                    CurrentUser currentUser,
                                                    ApplicationEventPublisher publisher
     ) {
-        return new StandardDocumentFlowProcess(numberGenerator, printCostCalculator,
+        return new StandardDocumentFlowProcess(documentFactory, printCostCalculator,
                 documentRepository, currentUser, publisher);
     }
 
     @Bean
-    public NumberGenerator numberGenerator() {
-        return new ISONumberGenerator();
+    public DocumentFactory documentFactory(NumberGenerator numberGenerator) {
+        return new DocumentFactory(numberGenerator);
+    }
+
+    @Bean
+    public NumberGenerator numberGenerator(
+            @Value("${dms.qualitySystem}") String qualitySystem,
+            @Value("${spring.profiles.active}") String profiles
+    ) {
+        NumberGenerator base;
+        if (qualitySystem.equals("ISO"))
+            base = new ISONumberGenerator();
+        else if (qualitySystem.equals("QEP"))
+            base = new QEPNumberGenerator();
+        else
+            throw new IllegalArgumentException("Unknown quality system");
+        return base;
     }
 
     @Bean
