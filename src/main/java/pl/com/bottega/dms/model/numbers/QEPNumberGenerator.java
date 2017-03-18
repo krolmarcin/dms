@@ -7,7 +7,7 @@ import java.util.UUID;
 public class QEPNumberGenerator implements NumberGenerator {
 
     public DocumentNumber generate() {
-        return new DocumentNumber("QEP" + UUID.randomUUID().toString());
+        return new DocumentNumber("QEP-" + UUID.randomUUID().toString());
     }
 
 }
