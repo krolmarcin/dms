@@ -24,8 +24,10 @@ import pl.com.bottega.dms.application.user.impl.StandardAuthProcess;
 import pl.com.bottega.dms.application.user.impl.StandardCurrentUser;
 import pl.com.bottega.dms.model.DocumentFactory;
 import pl.com.bottega.dms.model.DocumentRepository;
+import pl.com.bottega.dms.model.DocumentStatus;
 import pl.com.bottega.dms.model.numbers.*;
 import pl.com.bottega.dms.model.printing.*;
+import pl.com.bottega.dms.model.validation.*;
 
 import java.util.concurrent.Executor;
 
@@ -133,6 +135,32 @@ public class Configuration extends AsyncConfigurerSupport {
         executor.setThreadNamePrefix("DMS-Ascync-Executor");
         executor.initialize();
         return executor;
+    }
+
+    @Bean
+    public DocumentValidator documentValidator(@Value("${dms.qualitySystem}") String qualitySystem, Environment env) {
+        if (qualitySystem.equals("ISO")) {
+            return isoDocumentValidator();
+        } else if (qualitySystem.equals("QEP")) {
+            return qepDocumentValidator();
+        } else
+            throw new IllegalArgumentException("Invalid quality system");
+    }
+
+    private DocumentValidator qepDocumentValidator() {
+        DocumentValidator v1 = new VerifiedAuthorValidator();
+        DocumentValidator v2 = new ExpiresAtValidator(DocumentStatus.VERIFIED);
+        DocumentValidator v3 = new PublishedContentValidator();
+        v1.setNext(v2);
+        v2.setNext(v3);
+        return v1;
+    }
+
+    private DocumentValidator isoDocumentValidator() {
+        DocumentValidator v1 = new VerifiedNumberValidator();
+        DocumentValidator v2 = new ExpiresAtValidator(DocumentStatus.PUBLISHED);
+        v1.setNext(v2);
+        return v1;
     }
 
 }
