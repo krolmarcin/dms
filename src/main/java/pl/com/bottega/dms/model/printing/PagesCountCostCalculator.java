@@ -9,18 +9,17 @@ public class PagesCountCostCalculator implements PrintCostCalculator {
     private static final BigDecimal HIGH_PAGES_COUNT_COST = new BigDecimal(40);
     private static final int PAGES_COUNT_LIMIT = 100;
 
-    private PrintCostCalculator printCostCalculator;
+    private PrintCostCalculator decorated;
 
-    public PagesCountCostCalculator(PrintCostCalculator printCostCalculator) {
-        this.printCostCalculator = printCostCalculator;
+    public PagesCountCostCalculator(PrintCostCalculator decorated) {
+        this.decorated = decorated;
     }
 
     @Override
     public BigDecimal calculateCost(Document document) {
+        BigDecimal cost = decorated.calculateCost(document);
         if (document.getPagesCount() > PAGES_COUNT_LIMIT)
-            return calculateCost(document).multiply(HIGH_PAGES_COUNT_COST);
-        else
-            return BigDecimal.valueOf(0);
+            cost = cost.add(HIGH_PAGES_COUNT_COST);
+        return cost;
     }
-
 }

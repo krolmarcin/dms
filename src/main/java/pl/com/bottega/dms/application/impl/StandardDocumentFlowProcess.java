@@ -27,12 +27,13 @@ public class StandardDocumentFlowProcess implements DocumentFlowProcess {
 
     public StandardDocumentFlowProcess(DocumentFactory documentFactory, PrintCostCalculator printCostCalculator,
                                        DocumentRepository documentRepository, CurrentUser currentUser,
-                                       ApplicationEventPublisher publisher) {
+                                       ApplicationEventPublisher publisher, DocumentValidator documentValidator) {
         this.documentFactory = documentFactory;
         this.printCostCalculator = printCostCalculator;
         this.documentRepository = documentRepository;
         this.currentUser = currentUser;
         this.publisher = publisher;
+        this.documentValidator = documentValidator;
     }
 
     @Override

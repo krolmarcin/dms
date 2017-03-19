@@ -185,10 +185,12 @@ public class Document {
     }
 
     public int getPagesCount() {
+        if (content == null)
+            return 0;
         return content.length() / CHARS_COUNT_PER_PAGE + (content.length() % CHARS_COUNT_PER_PAGE == 0 ? 0 : 1);
     }
 
-    public LocalDateTime getExpitesAt() {
+    public LocalDateTime getExpiresAt() {
         return expitesAt;
     }
 }

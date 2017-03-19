@@ -11,12 +11,10 @@ import pl.com.bottega.dms.application.*;
 import pl.com.bottega.dms.model.DocumentNumber;
 import pl.com.bottega.dms.model.DocumentType;
 import pl.com.bottega.dms.model.EmployeeId;
-import pl.com.bottega.dms.model.commands.ConfirmDocumentCommand;
-import pl.com.bottega.dms.model.commands.ConfirmForDocumentCommand;
-import pl.com.bottega.dms.model.commands.CreateDocumentCommand;
-import pl.com.bottega.dms.model.commands.PublishDocumentCommand;
+import pl.com.bottega.dms.model.commands.*;
 import pl.com.bottega.dms.shared.AuthHelper;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.*;
@@ -39,14 +37,10 @@ public class ConfirmationTest {
     @Autowired
     private AuthHelper authHelper;
 
-    @Before
-    public void authenticate() {
-        authHelper.authenticate();
-    }
-
     @Test
     public void shouldConfirmDocument() {
         // given
+        authHelper.authenticate();
         DocumentNumber documentNumber = publishedDocument();
 
         //when
@@ -57,39 +51,41 @@ public class ConfirmationTest {
 
         //then
         DocumentDto dto = documentCatalog.get(documentNumber);
-        assertThat(dto.getConfirmations().size()).isEqualTo(2);
+        assertThat(dto.getConfirmations().size()).isEqualTo(1);
         ConfirmationDto confirmationDto = dto.getConfirmations().get(0);
-        assertThat(confirmationDto.isConfirmed()).isFalse();
-        assertThat(confirmationDto.getOwnerEmployeeId()).isEqualTo(2L);
+        assertThat(confirmationDto.isConfirmed()).isTrue();
+        assertThat(confirmationDto.getOwnerEmployeeId()).isEqualTo(1L);
     }
 
     @Test
     public void shouldConfirmDocumentForAnotherEmployee() {
         // given
+        authHelper.authenticate(0L);
         DocumentNumber documentNumber = publishedDocument();
 
         //when
-        ConfirmForDocumentCommand confirmForDocumentCommand = new ConfirmForDocumentCommand();
-        confirmForDocumentCommand.setEmployeeId(new EmployeeId(1L));
-        confirmForDocumentCommand.setConfirmForEmployeeId(new EmployeeId(2L));
-        confirmForDocumentCommand.setNumber(documentNumber.getNumber());
-        readingConfirmator.confirmFor(confirmForDocumentCommand);
+        ConfirmForDocumentCommand confirmDocumentCommand = new ConfirmForDocumentCommand();
+        confirmDocumentCommand.setConfirmForEmployeeId(new EmployeeId(1L));
+        confirmDocumentCommand.setNumber(documentNumber.getNumber());
+        readingConfirmator.confirmFor(confirmDocumentCommand);
 
         //then
         DocumentDto dto = documentCatalog.get(documentNumber);
-        assertThat(dto.getConfirmations().size()).isEqualTo(2);
+        assertThat(dto.getConfirmations().size()).isEqualTo(1);
         ConfirmationDto confirmationDto = dto.getConfirmations().get(0);
         assertThat(confirmationDto.isConfirmed()).isTrue();
         assertThat(confirmationDto.getOwnerEmployeeId()).isEqualTo(1L);
-        assertThat(confirmationDto.getProxyEmployeeId()).isEqualTo(2L);
+        assertThat(confirmationDto.getProxyEmployeeId()).isEqualTo(0L);
     }
+
 
     private DocumentNumber publishedDocument() {
         DocumentNumber documentNumber = createDocument();
+        updateDocument(documentNumber);
         documentFlowProcess.verify(documentNumber);
         PublishDocumentCommand publishDocumentCommand = new PublishDocumentCommand();
         publishDocumentCommand.setDocumentNumber(documentNumber.getNumber());
-        publishDocumentCommand.setRecipients(Arrays.asList(new EmployeeId(1L), new EmployeeId(2L)));
+        publishDocumentCommand.setRecipients(Arrays.asList(new EmployeeId(1L)));
         documentFlowProcess.publish(publishDocumentCommand);
         return documentNumber;
     }
@@ -102,4 +98,12 @@ public class ConfirmationTest {
         return documentFlowProcess.create(cmd);
     }
 
+    private void updateDocument(DocumentNumber nr) {
+        ChangeDocumentCommand cmd = new ChangeDocumentCommand();
+        cmd.setNumber(nr.getNumber());
+        cmd.setContent("blah blah");
+        cmd.setExpiresAt(LocalDateTime.now().plusDays(365L));
+        cmd.setTitle("test");
+        documentFlowProcess.change(cmd);
+    }
 }

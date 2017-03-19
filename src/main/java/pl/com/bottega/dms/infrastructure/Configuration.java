@@ -39,11 +39,12 @@ public class Configuration extends AsyncConfigurerSupport {
     public DocumentFlowProcess documentFlowProcess(DocumentFactory documentFactory, PrintCostCalculator printCostCalculator,
                                                    DocumentRepository documentRepository,
                                                    CurrentUser currentUser,
-                                                   ApplicationEventPublisher publisher
+                                                   ApplicationEventPublisher publisher,
+                                                   DocumentValidator documentValidator
 
     ) {
         return new StandardDocumentFlowProcess(documentFactory, printCostCalculator,
-                documentRepository, currentUser, publisher);
+                documentRepository, currentUser, publisher, documentValidator);
     }
 
     @Bean
@@ -153,6 +154,7 @@ public class Configuration extends AsyncConfigurerSupport {
         DocumentValidator v3 = new PublishedContentValidator();
         v1.setNext(v2);
         v2.setNext(v3);
+        v3.setNext(new AgreeableDocumentValidator());
         return v1;
     }
 
@@ -160,6 +162,7 @@ public class Configuration extends AsyncConfigurerSupport {
         DocumentValidator v1 = new VerifiedNumberValidator();
         DocumentValidator v2 = new ExpiresAtValidator(DocumentStatus.PUBLISHED);
         v1.setNext(v2);
+        v2.setNext(new AgreeableDocumentValidator());
         return v1;
     }
 

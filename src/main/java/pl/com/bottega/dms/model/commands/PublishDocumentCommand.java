@@ -12,6 +12,8 @@ public class PublishDocumentCommand implements EmployeeAware, Validatable{
 
     private String documentNumber;
 
+    private String content;
+
     public EmployeeId getEmployeeId() {
         return employeeId;
     }
@@ -43,5 +45,4 @@ public class PublishDocumentCommand implements EmployeeAware, Validatable{
         if(recipients == null || recipients.size() == 0)
             errors.add("recipients", "Can't be blank");
     }
-
 }

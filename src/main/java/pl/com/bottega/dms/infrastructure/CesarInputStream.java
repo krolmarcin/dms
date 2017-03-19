@@ -5,21 +5,20 @@ import java.io.InputStream;
 
 public class CesarInputStream extends InputStream {
 
-    private final InputStream inputStream;
-    private int key;
+    private final InputStream decorated;
+    private final int key;
 
-    public CesarInputStream(InputStream inputStream, int key) {
-
-        this.inputStream = inputStream;
+    public CesarInputStream(InputStream decorated, int key) {
+        this.decorated = decorated;
         this.key = key;
     }
 
     @Override
     public int read() throws IOException {
-        int b = inputStream.read();
+        int b = decorated.read();
         if (b == -1)
             return -1;
-        return (b - key) % 255;
+        return (b - key) % 0xff;
     }
 
 }

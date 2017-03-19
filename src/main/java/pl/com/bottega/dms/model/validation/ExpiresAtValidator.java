@@ -13,7 +13,7 @@ public class ExpiresAtValidator extends DocumentValidator {
 
     @Override
     public boolean isValid(Document document, DocumentStatus targetStatus) {
-        if (targetStatus.equals(this.targetStatus) && document.getExpitesAt() != null)
+        if (targetStatus.equals(this.targetStatus) && document.getExpiresAt() != null)
             return false;
         return next.isValid(document, targetStatus);
     }

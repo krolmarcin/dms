@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -318,20 +319,21 @@ public class DocumentTest {
 
     @Test
     // 2. Dokumnet powiniem pamiętać kto za kogo potwierdzał
-    public void shouldRememberProxyConfirmFor() {
-        //given - published document for EmployeeId(3L)
-        EmployeeId employeeId = new EmployeeId(3L);
-        Document document = given().publishedDocument(employeeId);
+    public void shouldRememberProxyEmployeeWhenConfirming() {
+        //given
+        Document document = given().publishedDocument(new EmployeeId(1L));
 
-        //when - confirm by proxy
+        //when
         ConfirmForDocumentCommand cmd = new ConfirmForDocumentCommand();
-        EmployeeId proxy = new EmployeeId(2L);
-        cmd.setEmployeeId(employeeId);
-        cmd.setConfirmForEmployeeId(proxy);
+        cmd.setEmployeeId(new EmployeeId(2L));
+        cmd.setConfirmForEmployeeId(new EmployeeId(1L));
         document.confirmFor(cmd);
 
-        //then - getConfirmationFor by proxy should be employeeId
-        assertEquals(proxy, document.getConfirmation(employeeId).getProxy());
+        //then
+        Confirmation confirmation = document.getConfirmation(new EmployeeId(1L));
+        assertThat(confirmation.isConfirmed()).isTrue();
+        assertThat(confirmation.getOwner()).isEqualTo(new EmployeeId(1L));
+        assertThat(confirmation.getProxy()).isEqualTo(new EmployeeId(2L));
     }
 
     @Test(expected = DocumentStatusException.class)
