@@ -108,6 +108,18 @@ public class Document {
         confirmation.confirmFor(cmd.getEmployeeId());
     }
 
+    public void export(DocumentBuilder builder){
+        builder.buildNumber(number);
+        builder.buildTitle(title);
+        builder.buildContent(content);
+        builder.buildDocumentType(documentType);
+        builder.buildStatus(status);
+        builder.buildCreatedAt(createdAt);
+        for (Confirmation confirmation : confirmations)
+            builder.buildConfirmations(confirmation.getOwner(), confirmation.getProxy(), confirmation.getConfirmationDate());
+
+    }
+
     public DocumentStatus getStatus() {
         return status;
     }
@@ -158,10 +170,6 @@ public class Document {
 
     public BigDecimal getPrintCost() {
         return printCost;
-    }
-
-    public void setPrintCost(BigDecimal printCost) {
-        this.printCost = printCost;
     }
 
     public boolean isConfirmedBy(EmployeeId employeeId) {
