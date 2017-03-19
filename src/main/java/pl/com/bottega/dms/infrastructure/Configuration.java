@@ -25,8 +25,7 @@ import pl.com.bottega.dms.application.user.impl.StandardCurrentUser;
 import pl.com.bottega.dms.model.DocumentFactory;
 import pl.com.bottega.dms.model.DocumentRepository;
 import pl.com.bottega.dms.model.numbers.*;
-import pl.com.bottega.dms.model.printing.PrintCostCalculator;
-import pl.com.bottega.dms.model.printing.RGBPrintCostCalculator;
+import pl.com.bottega.dms.model.printing.*;
 
 import java.util.concurrent.Executor;
 
@@ -39,6 +38,7 @@ public class Configuration extends AsyncConfigurerSupport {
                                                    DocumentRepository documentRepository,
                                                    CurrentUser currentUser,
                                                    ApplicationEventPublisher publisher
+
     ) {
         return new StandardDocumentFlowProcess(documentFactory, printCostCalculator,
                 documentRepository, currentUser, publisher);
@@ -76,8 +76,16 @@ public class Configuration extends AsyncConfigurerSupport {
     }
 
     @Bean
-    public PrintCostCalculator printCostCalculator() {
-        return new RGBPrintCostCalculator();
+    public PrintCostCalculator printCostCalculator(@Value("${dms.printSystem}") String printSystem, Environment env) {
+        PrintCostCalculator cost = null;
+        if (printSystem == null || printSystem.equals("BW"))
+            cost = new BWPrintCostCalculator();
+        else if (printSystem.equals("RGB"))
+            cost = new RGBPrintCostCalculator();
+        else
+            throw new IllegalArgumentException("Unknown print system");
+        cost = new ManualPrintCostCalculator(new PagesCountCostCalculator(cost));
+        return cost;
     }
 
     @Bean

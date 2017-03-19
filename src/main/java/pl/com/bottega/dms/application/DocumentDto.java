@@ -15,6 +15,8 @@ public class DocumentDto {
     private Long creatorId;
     private LocalDateTime createdAt;
 
+    private String documentType;
+
     public String getTitle() {
         return title;
     }
@@ -69,6 +71,14 @@ public class DocumentDto {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
     }
 
 }

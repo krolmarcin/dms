@@ -15,6 +15,7 @@ import static pl.com.bottega.dms.model.DocumentStatus.*;
 @Entity
 public class Document {
 
+    private static final int CHARS_COUNT_PER_PAGE = 1800;
     @EmbeddedId
     private DocumentNumber number;
     @Enumerated(EnumType.STRING)
@@ -25,6 +26,7 @@ public class Document {
     private LocalDateTime verifiedAt;
     private LocalDateTime publishedAt;
     private LocalDateTime changedAt;
+    private LocalDateTime expitesAt;
     @Embedded
     @AttributeOverride(name = "id", column = @Column(name = "creatorId"))
     private EmployeeId creatorId;
@@ -38,6 +40,8 @@ public class Document {
     @AttributeOverride(name = "id", column = @Column(name = "publisherId"))
     private EmployeeId publisherId;
     private BigDecimal printCost;
+    @Enumerated(EnumType.STRING)
+    private DocumentType documentType;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "documentNumber")
@@ -48,6 +52,7 @@ public class Document {
 
     public Document(CreateDocumentCommand cmd, DocumentNumber documentNumber) {
         this.number = documentNumber;
+        this.documentType = cmd.getDocumentType();
         this.status = DRAFT;
         this.title = cmd.getTitle();
         this.createdAt = LocalDateTime.now();
@@ -173,5 +178,17 @@ public class Document {
                 return confirmation;
         }
         throw new DocumentStatusException(String.format("No confirmation for %s", employeeId));
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public int getPagesCount() {
+        return content.length() / CHARS_COUNT_PER_PAGE + (content.length() % CHARS_COUNT_PER_PAGE == 0 ? 0 : 1);
+    }
+
+    public LocalDateTime getExpitesAt() {
+        return expitesAt;
     }
 }

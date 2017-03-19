@@ -4,10 +4,12 @@ import pl.com.bottega.dms.model.EmployeeId;
 
 
 public class ConfirmForDocumentCommand implements EmployeeAware, Validatable {
+
     private EmployeeId employeeId;
+
     private EmployeeId confirmForEmployeeId;
+
     private String number;
-    private EmployeeId confirmingEmployeeId;
 
     public EmployeeId getEmployeeId() {
         return employeeId;
@@ -25,14 +27,6 @@ public class ConfirmForDocumentCommand implements EmployeeAware, Validatable {
         this.number = number;
     }
 
-    @Override
-    public void validate(Validatable.ValidationErrors errors) {
-        if (isEmpty(number))
-            errors.add("number", "can't be blank");
-        if(confirmForEmployeeId == null)
-            errors.add("confirmForEmployeeId", "can't be blank");
-    }
-
     public EmployeeId getConfirmForEmployeeId() {
         return confirmForEmployeeId;
     }
@@ -41,7 +35,12 @@ public class ConfirmForDocumentCommand implements EmployeeAware, Validatable {
         this.confirmForEmployeeId = confirmForEmployeeId;
     }
 
-    public void setConfirmingEmployeeId(EmployeeId confirmingEmployeeId) {
-        this.confirmingEmployeeId = confirmingEmployeeId;
+    @Override
+    public void validate(Validatable.ValidationErrors errors) {
+        if (isEmpty(number))
+            errors.add("number", "can't be blank");
+        if(confirmForEmployeeId == null)
+            errors.add("confirmForEmployeeId", "can't be blank");
     }
+
 }

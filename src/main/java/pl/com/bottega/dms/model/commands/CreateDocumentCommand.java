@@ -1,5 +1,6 @@
 package pl.com.bottega.dms.model.commands;
 
+import pl.com.bottega.dms.model.DocumentType;
 import pl.com.bottega.dms.model.EmployeeId;
 
 public class CreateDocumentCommand implements EmployeeAware, Validatable {
@@ -9,6 +10,8 @@ public class CreateDocumentCommand implements EmployeeAware, Validatable {
     private String content;
 
     private EmployeeId employeeId;
+
+    private DocumentType documentType;
 
     public void setTitle(String title) {
         this.title = title;
@@ -34,12 +37,21 @@ public class CreateDocumentCommand implements EmployeeAware, Validatable {
         this.content = content;
     }
 
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
+    }
+
     @Override
     public void validate(Validatable.ValidationErrors errors) {
         if (title == null || title.isEmpty())
             errors.add("number", "can't be blanked");
         if (content == null || content.isEmpty())
             errors.add("number", "can't be blanked");
+        if (documentType == null)
+            errors.add("number", "can't be blanked");
     }
 
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
 }

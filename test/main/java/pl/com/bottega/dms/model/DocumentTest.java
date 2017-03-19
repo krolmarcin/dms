@@ -48,6 +48,14 @@ public class DocumentTest {
     }
 
     @Test
+    public void shouldSetDocumentTyoeOnCreate() {
+        Document document = given().newDocument();
+
+        assertEquals(DocumentType.QUALITY_BOOK, document.getDocumentType());
+    }
+
+
+    @Test
     public void shouldChangeTitleAndContent() {
         Document document = given().newDocument();
 
@@ -317,9 +325,9 @@ public class DocumentTest {
 
         //when - confirm by proxy
         ConfirmForDocumentCommand cmd = new ConfirmForDocumentCommand();
-        EmployeeId proxy = new EmployeeId(10L);
+        EmployeeId proxy = new EmployeeId(2L);
         cmd.setEmployeeId(employeeId);
-        cmd.setConfirmingEmployeeId(proxy);
+        cmd.setConfirmForEmployeeId(proxy);
         document.confirmFor(cmd);
 
         //then - getConfirmationFor by proxy should be employeeId
@@ -353,7 +361,7 @@ public class DocumentTest {
         ConfirmForDocumentCommand cmd = new ConfirmForDocumentCommand();
         cmd.setEmployeeId(employeeId);
         EmployeeId proxy = new EmployeeId(2L);
-        cmd.setConfirmingEmployeeId(proxy);
+        cmd.setConfirmForEmployeeId(proxy);
         document.confirmFor(cmd);
         document.confirmFor(cmd);
 
@@ -385,7 +393,7 @@ public class DocumentTest {
         //when - Employee 300L try to confirmFor
         ConfirmForDocumentCommand cmd = new ConfirmForDocumentCommand();
         cmd.setEmployeeId(employeeId);
-        cmd.setConfirmingEmployeeId(employeeId);
+        cmd.setConfirmForEmployeeId(employeeId);
         document.confirmFor(cmd);
 
         //then - throw exception - add as @Test(expected)
@@ -417,10 +425,10 @@ public class DocumentTest {
             EmployeeId employeeId = anyEmployeeId();
             CreateDocumentCommand cmd = new CreateDocumentCommand();
             cmd.setTitle("test title");
+            cmd.setContent("content");
             cmd.setEmployeeId(employeeId);
-            NumberGenerator numberGenerator = new ISONumberGenerator();
-            DocumentFactory documentFactory = new DocumentFactory(numberGenerator);
-            return documentFactory.createDocument(cmd);
+            cmd.setDocumentType(DocumentType.QUALITY_BOOK);
+            return new Document(cmd, anyDocumentNumber());
         }
 
         public Document verifiedDocument() {

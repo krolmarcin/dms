@@ -11,6 +11,7 @@ import pl.com.bottega.dms.application.DocumentDto;
 import pl.com.bottega.dms.application.DocumentFlowProcess;
 import pl.com.bottega.dms.application.DocumentCatalog;
 import pl.com.bottega.dms.model.DocumentNumber;
+import pl.com.bottega.dms.model.DocumentType;
 import pl.com.bottega.dms.model.EmployeeId;
 import pl.com.bottega.dms.model.commands.ChangeDocumentCommand;
 import pl.com.bottega.dms.model.commands.CreateDocumentCommand;
@@ -115,7 +116,8 @@ public class DocumentFlowTest {
     private DocumentNumber createDocument() {
         CreateDocumentCommand cmd = new CreateDocumentCommand();
         cmd.setTitle("test");
-        cmd.setContent("test content");
+        cmd.setContent("test content content");
+        cmd.setDocumentType(DocumentType.MANUAL);
         return documentFlowProcess.create(cmd);
     }
 
