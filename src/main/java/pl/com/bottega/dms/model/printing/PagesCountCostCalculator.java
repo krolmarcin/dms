@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 public class PagesCountCostCalculator implements PrintCostCalculator {
 
     private static final BigDecimal HIGH_PAGES_COUNT_COST = new BigDecimal(40);
+
     private static final int PAGES_COUNT_LIMIT = 100;
 
     private PrintCostCalculator decorated;
@@ -22,4 +23,5 @@ public class PagesCountCostCalculator implements PrintCostCalculator {
             cost = cost.add(HIGH_PAGES_COUNT_COST);
         return cost;
     }
+
 }

@@ -23,4 +23,5 @@ public class ManualPrintCostCalculator implements PrintCostCalculator {
             cost = cost.multiply(COST_FACTOR);
         return cost;
     }
+
 }

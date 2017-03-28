@@ -4,15 +4,15 @@ import pl.com.bottega.dms.model.DocumentNumber;
 
 public class AuditNumberGenerator implements NumberGenerator {
 
-    private NumberGenerator numberGenerator;
+    private NumberGenerator decorated;
 
-    public AuditNumberGenerator(NumberGenerator numberGenerator) {
-        this.numberGenerator = numberGenerator;
+    public AuditNumberGenerator(NumberGenerator decorated) {
+        this.decorated = decorated;
     }
 
     @Override
     public DocumentNumber generate() {
-        DocumentNumber documentNumber = numberGenerator.generate();
+        DocumentNumber documentNumber = decorated.generate();
 
         String nr = documentNumber.getNumber();
         return new DocumentNumber("AUDIT-" + nr);

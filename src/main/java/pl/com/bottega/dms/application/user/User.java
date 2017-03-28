@@ -29,4 +29,7 @@ public class User {
         return userName;
     }
 
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
 }

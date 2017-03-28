@@ -4,15 +4,15 @@ import pl.com.bottega.dms.model.DocumentNumber;
 
 public class DemoNumberGenerator implements NumberGenerator {
 
-    private NumberGenerator numberGenerator;
+    private NumberGenerator decorated;
 
-    public DemoNumberGenerator(NumberGenerator numberGenerator) {
-        this.numberGenerator = numberGenerator;
+    public DemoNumberGenerator(NumberGenerator decorated) {
+        this.decorated = decorated;
     }
 
     @Override
     public DocumentNumber generate() {
-        DocumentNumber documentNumber = numberGenerator.generate();
+        DocumentNumber documentNumber = decorated.generate();
 
         String nr = documentNumber.getNumber();
         return new DocumentNumber("DEMO-" + nr);

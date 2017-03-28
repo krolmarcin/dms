@@ -5,10 +5,15 @@ import pl.com.bottega.dms.model.EmployeeId;
 import java.time.LocalDateTime;
 
 public class ChangeDocumentCommand implements EmployeeAware, Validatable {
+
     private String title;
+
     private String content;
+
     private EmployeeId employeeId;
+
     private String number;
+
     private LocalDateTime expiresAt;
 
     public void setTitle(String title) {
@@ -43,6 +48,10 @@ public class ChangeDocumentCommand implements EmployeeAware, Validatable {
         this.number = number;
     }
 
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
     public void setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
     }
@@ -56,4 +65,5 @@ public class ChangeDocumentCommand implements EmployeeAware, Validatable {
         if (isEmpty(number))
             errors.add("number", "can't be blank");
     }
+
 }

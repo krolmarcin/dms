@@ -101,9 +101,10 @@ public class ConfirmationTest {
     private void updateDocument(DocumentNumber nr) {
         ChangeDocumentCommand cmd = new ChangeDocumentCommand();
         cmd.setNumber(nr.getNumber());
+        cmd.setTitle("test");
         cmd.setContent("blah blah");
         cmd.setExpiresAt(LocalDateTime.now().plusDays(365L));
-        cmd.setTitle("test");
         documentFlowProcess.change(cmd);
     }
+
 }

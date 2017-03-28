@@ -41,17 +41,17 @@ public class CreateDocumentCommand implements EmployeeAware, Validatable {
         this.documentType = documentType;
     }
 
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
     @Override
     public void validate(Validatable.ValidationErrors errors) {
         if (title == null || title.isEmpty())
-            errors.add("number", "can't be blanked");
+            errors.add("title", "can't be blanked");
         if (content == null || content.isEmpty())
-            errors.add("number", "can't be blanked");
+            errors.add("content", "can't be blanked");
         if (documentType == null)
-            errors.add("number", "can't be blanked");
-    }
-
-    public DocumentType getDocumentType() {
-        return documentType;
+            errors.add("documentType", "can't be blanked");
     }
 }

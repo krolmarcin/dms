@@ -126,7 +126,7 @@ public class DocumentFlowTest {
     private void updateDocument(DocumentNumber documentNumber){
         ChangeDocumentCommand cmd = new ChangeDocumentCommand();
         cmd.setNumber(documentNumber.getNumber());
-        cmd.setContent("bla bnla");
+        cmd.setContent("bla bla");
         cmd.setTitle("title");
         cmd.setExpiresAt(LocalDateTime.now().plusDays(365L));
         documentFlowProcess.change(cmd);

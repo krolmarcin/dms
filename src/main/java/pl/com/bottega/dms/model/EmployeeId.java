@@ -8,11 +8,11 @@ public class EmployeeId implements Serializable {
 
     private Long id;
 
+    EmployeeId() {}
+
     public EmployeeId(Long id) {
         this.id = id;
     }
-
-    EmployeeId() {}
 
     @Override
     public boolean equals(Object o) {
@@ -32,4 +32,5 @@ public class EmployeeId implements Serializable {
     public Long getId() {
         return id;
     }
+
 }
